@@ -26,7 +26,7 @@ const iconMap = {
 };
 
 type CategoryGridProps = {
-  onCategorySelect: (category: Category) => void;
+  onCategorySelect: (category: Omit<Category, 'description' | 'difficulty'> & { description?: string; difficulty?: 'easy' | 'medium' | 'hard' }) => void;
   userProgress?: { [key: string]: number };
 };
 

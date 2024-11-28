@@ -3,8 +3,25 @@ import type { Category, UserProfile } from '../types/game';
 import { getUserProfile, updateUserProfile } from '../services/aws/userService';
 import { updateScore } from '../services/aws/leaderboardService.ts';
 
-export function useGameState(userId: string = 'default') {
-  const [userProfile, setUserProfile] = useState<UserProfile>({
+import { mockPuzzles } from '../services/puzzleService';
+
+export function useGameState(
+  userId: string = 'default',
+  initialCategory?: Category
+) {
+  const defaultCategory: Category = {
+    id: 'default',
+    name: 'Default',
+    icon: 'default-icon',
+    progress: 0,
+    totalPuzzles: 0,
+    description: '',
+    difficulty: 'medium'
+  };
+  
+  const selectedCategory: Category = initialCategory || defaultCategory;
+
+const [userProfile, setUserProfile] = useState<UserProfile>({
     coins: 1000,
     level: 1,
     completedPuzzles: 0,
@@ -34,7 +51,7 @@ export function useGameState(userId: string = 'default') {
     await updateScore('default', userProfile.completedPuzzles * 100, newProfile.coins);
   };
 
-  const completeCategory = async (category: Category) => {
+  const completeCategory = async (category: Category): Promise<void> => {
     const newProfile = {
       ...userProfile,
       completedPuzzles: userProfile.completedPuzzles + 1,
