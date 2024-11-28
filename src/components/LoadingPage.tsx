@@ -41,9 +41,13 @@ export function LoadingPage({ onLoadComplete }: LoadingPageProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-indigo-900 to-purple-900 flex flex-col items-center justify-center">
+    <div className="fixed inset-0 flex flex-col items-center justify-center">
+      <div className="fixed inset-0 z-0">
+        <img src="/assets/background.gif" alt="Background" className="w-full h-full object-cover" />
+      </div>
+      <div className="relative z-10">
       <div className="animate-bounce mb-8">
-        <h1 className="text-4xl font-bold text-white mb-4">Word Puzzle Challenge</h1>
+        <h1 className="text-4xl font-bold text-white mb-4">son<span className="text-yellow-400">IQ</span>ue challenge</h1>
       </div>
       <div className="animate-spin w-16 h-16 border-4 border-white border-t-transparent rounded-full mb-8"></div>
       <button
@@ -53,6 +57,7 @@ export function LoadingPage({ onLoadComplete }: LoadingPageProps) {
       >
         {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
       </button>
+    </div>
     </div>
   );
 }

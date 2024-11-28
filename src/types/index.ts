@@ -26,13 +26,8 @@ export interface GameState {
   level: number;
 }
 
-export interface Category {
-  id: string;
-  name: string;
-  description: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  icon: string;
-}
+// Category type has been moved to game.ts to avoid duplication
+export type { Category } from './game';
 
 export type ErrorType = {
   message: string;

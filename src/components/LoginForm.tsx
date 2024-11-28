@@ -22,7 +22,7 @@ export function LoginForm() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="container max-w-md w-full p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Login</h2>
+        <h2 className="text-2xl font-bold text-white-900 mb-6">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="p-3 bg-red-50 text-red-700 rounded-lg">
@@ -30,7 +30,7 @@ export function LoginForm() {
             </div>
           )}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="username" className="block text-sm font-medium text-white-700">
               Username
             </label>
             <input
@@ -43,7 +43,7 @@ export function LoginForm() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-white-700">
               Password
             </label>
             <input
@@ -58,7 +58,7 @@ export function LoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="btn-futuristic w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium disabled:opacity-50"medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="btn-futuristic w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </button>

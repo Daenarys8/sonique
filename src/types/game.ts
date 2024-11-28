@@ -4,6 +4,8 @@ export type Category = {
   icon: string;
   progress: number;
   totalPuzzles: number;
+  description?: string;
+  difficulty?: 'easy' | 'medium' | 'hard';
 };
 
 export type UserProfile = {
