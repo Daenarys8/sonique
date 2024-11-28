@@ -1,0 +1,15 @@
+.category-grid-container {
+  position: relative;
+  z-index: 10;
+}
+
+.category-grid-container button {
+  position: relative;
+  z-index: 10;
+}
+
+.futuristic-bg,
+.grid-overlay {
+  z-index: -1;
+  pointer-events: none;
+}
