@@ -1,7 +1,7 @@
 import type { LeaderboardEntry } from '../../types/game';
 
 // You might want to move this to a config file
-const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'your-api-gateway-url';
+const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT || 'your-api-gateway-url';
 
 export const leaderboardService = {
   getTopScores: getLeaderboard,

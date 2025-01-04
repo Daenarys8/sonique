@@ -8,7 +8,7 @@ import { type AwsCredentialIdentity } from '@aws-sdk/types'; // Add this import
 
 const region = 'us-east-1';
 
-const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;  // You'll get this from API Gateway
+const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;  // You'll get this from API Gateway
 
 export const awsConfig = {
   apiEndpoint: API_ENDPOINT
