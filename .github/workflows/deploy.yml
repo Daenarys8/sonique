@@ -26,6 +26,16 @@ jobs:
         run: npm run build
         env:
           CI: false
+          VITE_AWS_REGION: ${{ secrets.VITE_AWS_REGION }}
+          VITE_AWS_ACCESS_KEY_ID: ${{ secrets.VITE_AWS_ACCESS_KEY_ID }}
+          VITE_AWS_SECRET_ACCESS_KEY: ${{ secrets.VITE_AWS_SECRET_ACCESS_KEY }}
+          VITE_COGNITO_USER_POOL_ID: ${{ secrets.VITE_COGNITO_USER_POOL_ID }}
+          VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID }}
+          VITE_DYNAMODB_TABLE_PREFIX: ${{ secrets.VITE_DYNAMODB_TABLE_PREFIX }}
+          VITE_BEDROCK_MODEL_ID: ${{ secrets.VITE_BEDROCK_MODEL_ID }}
+          VITE_S3_BUCKET: ${{ secrets.VITE_S3_BUCKET }}
+          VITE_QUIZ_API_KEY: ${{ secrets.VITE_QUIZ_API_KEY }}
+          REACT_APP_API_ENDPOINT: ${{ secrets.REACT_APP_API_ENDPOINT }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
