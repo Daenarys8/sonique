@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && cp dist/index.html dist/404.html",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && aws s3 sync dist/ s3://sonique --delete",
+    "invalidate": "aws cloudfront create-invalidation --distribution-id E2HE4B6TLUWYNY --paths '/*'",
+    "deploy:prod": "npm run build && npm run deploy && npm run invalidate"
   },
   "dependencies": {
     "@aws-amplify/auth": "^6.8.0",
