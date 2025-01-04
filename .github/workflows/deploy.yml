@@ -1,4 +1,4 @@
-name: Deploy Game to AWS
+name: Deploy sonIQue to AWS
 on:
   push:
     branches: [ main ]
