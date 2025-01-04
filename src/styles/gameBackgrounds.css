@@ -1,0 +1,31 @@
+.category-background {
+  backdrop-filter: none;
+  background-image: none;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+}
+
+.category-pop {
+  background-image: url('/background_pop.png');
+}
+
+.category-rock {
+  background-image: url('/background_rock.png');
+}
+
+.category-jazz {
+  background-image: url('/background_jazz.png');
+}
+
+.category-classical {
+  background-image: url('/background_classical.png');
+}
+
+.category-electronic {
+  background-image: url('/background_electronic.png');
+}

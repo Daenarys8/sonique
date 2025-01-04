@@ -1,11 +1,26 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { signIn, signOut, getCurrentUser, type AuthUser } from 'aws-amplify/auth';
+import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import { fetchUserAttributes } from 'aws-amplify/auth';
+import { getUserProfile, createUserProfile, getDefaultProfile } from '../services/aws/userService';
 
 interface User {
   username: string;
   id: string;
   email?: string;
+  profile?: any; // Will be populated with UserProfile from userService
+}
+
+interface UserStats {
+  totalGames: number;
+  totalScore: number;
+  totalCoins: number;
+}
+
+interface UserProfile {
+  userId: string;
+  username: string;
+  stats: UserStats;
+  // Add any other profile properties you might have
 }
 
 interface AuthContextType {
@@ -16,6 +31,8 @@ interface AuthContextType {
   loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
   isGuest: boolean;
+  startGuestSession: () => void;
+  endGuestSession: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,39 +44,121 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
-    fetchCurrentUser();
+    // Check for guest user first
+    const storedGuestUser = localStorage.getItem('guestUser');
+    const storedIsGuest = localStorage.getItem('isGuest');
+    
+    if (storedIsGuest === 'true' && storedGuestUser) {
+      setCurrentUser(JSON.parse(storedGuestUser));
+      setIsGuest(true);
+      setLoading(false);
+    } else {
+      const isMounted = { current: true };
+      fetchCurrentUser(isMounted);
+      return () => {
+        isMounted.current = false;
+      };
+    }
   }, []);
 
-  const fetchCurrentUser = async () => {
+  const fetchCurrentUser = async (isMounted: { current: boolean }) => {
     try {
-      const authUser = await getCurrentUser();
-      const attributes = await fetchUserAttributes();
+        // First check if we're in guest mode
+        const storedIsGuest = localStorage.getItem('isGuest');
+        const storedGuestUser = localStorage.getItem('guestUser');
+        
+        if (storedIsGuest === 'true' && storedGuestUser) {
+          if (isMounted.current) {
+            setCurrentUser(JSON.parse(storedGuestUser));
+            setIsGuest(true);
+            setLoading(false);
+          }
+          return; // Exit early for guest users
+        }
+      // Fetch auth user and attributes in parallel for better performance
+      const [authUser, attributes] = await Promise.all([
+        getCurrentUser(),
+        fetchUserAttributes()
+      ]);
+  
+      if (!isMounted.current) return;
+  
+      // Explicitly type the userProfile
+    const userProfile: UserProfile | null = await getUserProfile(authUser.userId);
       
-      setCurrentUser({
-        username: authUser.username,
-        id: authUser.userId,
-        email: attributes.email
-      });
+      // Create profile if it doesn't exist
+      if (!userProfile && isMounted.current) {
+        const defaultProfile = getDefaultProfile(authUser.userId, authUser.username);
+        const newProfile = await createUserProfile(authUser.userId, defaultProfile);
+        if (isMounted.current) {
+          setCurrentUser({
+            username: authUser.username,
+            id: authUser.userId,
+            email: attributes.email,
+            profile: newProfile
+          });
+          setError(null);
+        }
+      } else if (userProfile && isMounted.current) {
+        setCurrentUser({
+          username: authUser.username,
+          id: authUser.userId,
+          email: attributes.email,
+          profile: userProfile
+        });
+        setError(null);
+      }
+  
     } catch (err) {
+      if (!isMounted.current) return;
+  
       console.error('Error fetching current user:', err);
-      setCurrentUser(null);
+      
+      const authError = err as { name?: string; message?: string };
+      
+      switch (authError.name) {
+        case 'UserNotFoundException':
+        case 'NotAuthorizedException':
+        case 'UserUnAuthenticatedException':
+          // Handle unauthenticated state gracefully
+          setCurrentUser(null);
+          setError(null); // Don't show error if user is just not logged in
+          break;
+        case 'NetworkError':
+          setError('Network connection issue. Please check your connection.');
+          break;
+        default:
+          setCurrentUser(null);
+          setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   };
 
   const login = async (username: string, password: string) => {
     try {
-      const { isSignedIn, nextStep } = await signIn({ username, password });
+      const { isSignedIn, nextStep } = await signIn({ username, password, options: {
+        authFlowType: "USER_PASSWORD_AUTH"  // Add this explicit auth flow
+      } });
       
       if (isSignedIn) {
         const authUser = await getCurrentUser();
         const attributes = await fetchUserAttributes();
         
+        const userProfile = await getUserProfile(authUser.userId);
+        if (!userProfile) {
+          const defaultProfile = getDefaultProfile(authUser.userId, authUser.username);
+          await createUserProfile(authUser.userId, defaultProfile);
+        }
+        const profile = userProfile || await getUserProfile(authUser.userId);
         setCurrentUser({
           username: authUser.username,
           id: authUser.userId,
-          email: attributes.email
+          email: attributes.email,
+          profile
         });
         setError(null);
         setIsGuest(false);
@@ -86,9 +185,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      await signOut();
-      setCurrentUser(null);
-      setIsGuest(false);
+      if (isGuest) {
+        // Clear guest session
+        localStorage.removeItem('guestUser');
+        localStorage.removeItem('isGuest');
+        setCurrentUser(null);
+        setIsGuest(false);
+      } else {
+        // Regular user logout
+        await signOut();
+        setCurrentUser(null);
+        setIsGuest(false);
+      }
     } catch (err) {
       console.error('Logout error:', err);
       setError('Failed to logout. Please try again.');
@@ -99,17 +207,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginAsGuest = async () => {
     try {
       const guestUser: User = {
-        username: 'guest',
+        username: `guest-${Math.random().toString(36).substring(7)}`,
         id: `guest-${Date.now()}`,
       };
+      
+      try {
+        localStorage.setItem('guestUser', JSON.stringify(guestUser));
+        localStorage.setItem('isGuest', 'true');
+      } catch (storageError) {
+        console.warn('Failed to persist guest session:', storageError);
+      }
+      
       setCurrentUser(guestUser);
       setIsGuest(true);
       setError(null);
     } catch (err) {
+      console.error('Guest login error:', err);
       setError('Failed to login as guest. Please try again.');
       throw err;
     }
   };
+
+  const startGuestSession = () => {
+    setIsGuest(true);
+    setLoading(false);
+  };
+
+  const endGuestSession = () => {
+    setIsGuest(false);
+  };
+
 
   const value = {
     currentUser,
@@ -118,7 +245,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     login,
     logout,
     loginAsGuest,
-    isGuest
+    isGuest,
+    startGuestSession,
+    endGuestSession
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

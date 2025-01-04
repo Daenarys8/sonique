@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Category, UserProfile } from '../types/game';
 import { getUserProfile, updateUserProfile } from '../services/aws/userService';
-import { updateScore } from '../services/aws/leaderboardService.ts';
-
-import { mockPuzzles } from '../services/puzzleService';
+import { leaderboardService } from '../services/aws/leaderboardService';
 
 export function useGameState(
   userId: string = 'default',
@@ -21,10 +19,19 @@ export function useGameState(
   
   const selectedCategory: Category = initialCategory || defaultCategory;
 
-const [userProfile, setUserProfile] = useState<UserProfile>({
-    coins: 1000,
-    level: 1,
-    completedPuzzles: 0,
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    userId: 'default',
+    username: 'default',
+    stats: {
+      totalGames: 0,
+      totalScore: 0,
+      totalCoins: 1000,
+      completedCategories: []
+    },
+    preferences: {
+      theme: 'light',
+      soundEnabled: true
+    }
   });
 
   useEffect(() => {
@@ -43,25 +50,46 @@ const [userProfile, setUserProfile] = useState<UserProfile>({
   const updateCoins = async (amount: number) => {
     const newProfile = {
       ...userProfile,
-      coins: userProfile.coins + amount,
+      stats: {
+        ...userProfile.stats,
+        totalCoins: userProfile.stats.totalCoins + amount
+      }
     };
     
     setUserProfile(newProfile);
-    await updateUserProfile(userId, { coins: newProfile.coins });
-    await updateScore('default', userProfile.completedPuzzles * 100, newProfile.coins);
+    await updateUserProfile(userId, {
+      stats: {
+        totalCoins: newProfile.stats.totalCoins
+      }
+    });
+
+    await leaderboardService.submitScore(
+      userId,
+      userProfile.stats.totalScore,
+      newProfile.stats.totalCoins
+    );
   };
 
   const completeCategory = async (category: Category): Promise<void> => {
     const newProfile = {
       ...userProfile,
-      completedPuzzles: userProfile.completedPuzzles + 1,
-      level: Math.floor((userProfile.completedPuzzles + 1) / 5) + 1,
+      stats: {
+        ...userProfile.stats,
+        totalGames: userProfile.stats.totalGames + 1,
+        totalScore: userProfile.stats.totalScore + 100,
+        completedCategories: userProfile.stats.completedCategories.includes(category.id)
+          ? userProfile.stats.completedCategories
+          : [...userProfile.stats.completedCategories, category.id]
+      }
     };
     
     setUserProfile(newProfile);
     await updateUserProfile(userId, {
-      completedPuzzles: newProfile.completedPuzzles,
-      level: newProfile.level,
+      stats: {
+        totalGames: newProfile.stats.totalGames,
+        totalScore: newProfile.stats.totalScore,
+        completedCategories: newProfile.stats.completedCategories
+      }
     });
   };
 
