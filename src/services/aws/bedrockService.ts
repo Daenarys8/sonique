@@ -1,69 +1,59 @@
-import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
-import { fromNodeProviderChain } from "@aws-sdk/credential-providers";
+// bedrockService.ts
+import { PuzzleGenerationResponse } from '../../types/bedrock.ts';
 
+const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT || '';
 
-const bedrockClient = new BedrockRuntimeClient({
-  region: "us-east-1",
-  credentials: fromNodeProviderChain(),
-});
-
-interface PuzzleResponse {
-  question: string;
-  answer: string;
-}
-
-export const generatePuzzle = async (category: string, difficulty: string): Promise<PuzzleResponse> => {
-  const prompt = `Generate a ${difficulty} difficulty puzzle for the category ${category}. 
-    The puzzle should be challenging but solvable, and related to ${category}.
-    Format the response as a JSON object with "question" and "answer" fields.`;
-
-  const payload = {
-    prompt: prompt,
-    max_tokens: 500,
-    temperature: 0.7,
-  };
-
-  try {
-    const command = new InvokeModelCommand({
-      modelId: "anthropic.claude-v2",
-      body: JSON.stringify(payload),
-      contentType: "application/json",
-    });
-
-    const response = await bedrockClient.send(command);
-    const rawResponse = new TextDecoder().decode(response.body);
-    const claudeResponse = JSON.parse(rawResponse);
+export const bedrockService = {
+  generatePuzzle: async (prompt: string, maxRetries: number = 2): Promise<PuzzleGenerationResponse> => {
+    console.log('Generating puzzle with prompt:', prompt);
+    let lastError: Error | null = null;
     
-    if (claudeResponse.completion) {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        // First try to extract JSON from the completion
-        const jsonMatch = claudeResponse.completion.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsedContent = JSON.parse(jsonMatch[0]);
-          if (parsedContent.question && parsedContent.answer) {
-            return {
-              question: parsedContent.question,
-              answer: parsedContent.answer
-            };
-          }
+        console.log(`Attempt ${attempt + 1} of ${maxRetries + 1}`);
+        console.time(`API call ${attempt + 1}`);
+
+        const response = await fetch(`${API_ENDPOINT}/puzzle`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            prompt,
+            category: prompt.toLowerCase().includes('category:') 
+              ? prompt.split('category:')[1].trim().split(' ')[0].toLowerCase()
+              : 'general'
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const data = await response.json();
+        console.timeEnd(`API call ${attempt + 1}`);
+
+        return {
+          originalText: data.originalText,
+          scrambledText: data.scrambledText,
+          hint: data.hint
+        };
+
+      } catch (error) {
+        console.timeEnd(`API call ${attempt + 1}`);
+        console.error(`Attempt ${attempt + 1} failed:`, error);
+        lastError = error as Error;
         
-        // Fallback: treat the completion as direct response
-        const directParsed = JSON.parse(claudeResponse.completion);
-        if (directParsed.question && directParsed.answer) {
-          return {
-            question: directParsed.question,
-            answer: directParsed.answer
-          };
+        if (attempt < maxRetries) {
+          const backoffTime = Math.pow(2, attempt) * 1000;
+          console.log(`Retrying in ${backoffTime}ms...`);
+          await new Promise(resolve => setTimeout(resolve, backoffTime));
+          continue;
         }
-      } catch (e) {
-        console.error("Failed to parse Claude's response:", e);
       }
     }
     
-    throw new Error("Invalid puzzle response format from Claude");
-  } catch (error) {
-    console.error("Error generating puzzle:", error);
-    throw new Error("Failed to generate puzzle");
+    console.error('All attempts failed. Last error:', lastError);
+    throw lastError || new Error('Failed to generate puzzle after all retry attempts.');
   }
 };

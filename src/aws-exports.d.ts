@@ -4,6 +4,7 @@ interface AwsConfig {
       Cognito: {
         userPoolId: string;
         userPoolClientId: string;
+        userPoolClientSecret: string;
         signUpAttributes: string[];
       };
     };

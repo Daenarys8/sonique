@@ -1,22 +1,28 @@
-import { QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { dynamoDb } from './config';
 import type { LeaderboardEntry } from '../../types/game';
 
-export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
-  try {
-    const { Items } = await dynamoDb.send(
-      new QueryCommand({
-        TableName: 'sonique-leaderboard',
-        IndexName: 'score-index',
-        KeyConditionExpression: 'score > :minScore',
-        ExpressionAttributeValues: {
-          ':minScore': 0,
-        },
-        Limit: 10,
-        ScanIndexForward: false,
-      })
-    );
+// You might want to move this to a config file
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'your-api-gateway-url';
 
+export const leaderboardService = {
+  getTopScores: getLeaderboard,
+  submitScore: updateScore,
+};
+
+async function getLeaderboard(): Promise<LeaderboardEntry[]> {
+  try {
+    const response = await fetch(`${API_ENDPOINT}/leaderboard`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const { Items } = await response.json();
+    
     return (Items as LeaderboardEntry[]).map((item, index) => ({
       ...item,
       rank: index + 1,
@@ -27,21 +33,39 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
   }
 }
 
-export async function updateScore(username: string, score: number, coins: number): Promise<void> {
+async function updateScore(username: string, score: number, coins: number): Promise<void> {
   try {
-    await dynamoDb.send(
-      new UpdateCommand({
-        TableName: 'sonique-leaderboard',
-        Key: { username },
-        UpdateExpression: 'SET score = :score, coins = :coins',
-        ExpressionAttributeValues: {
-          ':score': score,
-          ':coins': coins,
-        },
+    const response = await fetch(`${API_ENDPOINT}/update-progress`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username,
+        score,
+        coins
       })
-    );
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error('Failed to update score');
+    }
   } catch (error) {
     console.error('Error updating score:', error);
     throw error;
+  }
+}
+
+// Add error types for better error handling
+export class LeaderboardError extends Error {
+  constructor(message: string, public statusCode?: number) {
+    super(message);
+    this.name = 'LeaderboardError';
   }
 }

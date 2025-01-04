@@ -1,0 +1,94 @@
+/* Import the Press Start 2P font */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+
+.futuristic-message {
+  font-family: 'Audiowide', cursive;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+  color: #e0ffff;
+  line-height: 1.6;
+}
+
+.futuristic-title-green {
+  font-family: 'Press Start 2P', cursive;
+  color: #e8f5f0;
+  text-shadow: 0 0 10px #c7cecb,
+               0 0 20px #bec9c5,
+               0 0 30px #969e9b;
+  animation: glow-green 1.5s ease-in-out infinite alternate,
+             glitch 3s infinite;
+  letter-spacing: 2px;
+}
+
+.futuristic-title-orange {
+  font-family: 'Press Start 2P', cursive;
+  color: #ff9d00;
+  text-shadow: 0 0 10px #ff9d00,
+               0 0 20px #ff9d00,
+               0 0 30px #ff9d00;
+  animation: glow-orange 1.5s ease-in-out infinite alternate,
+             glitch 3s infinite;
+  letter-spacing: 2px;
+}
+
+@keyframes glow-green {
+  from {
+    text-shadow: 0 0 5px #00ff9d,
+                 0 0 10px #00ff9d,
+                 0 0 15px #00ff9d;
+  }
+  to {
+    text-shadow: 0 0 10px #00ff9d,
+                 0 0 20px #00ff9d,
+                 0 0 30px #00ff9d;
+  }
+}
+
+@keyframes glow-orange {
+  from {
+    text-shadow: 0 0 5px #ff9d00,
+                 0 0 10px #ff9d00,
+                 0 0 15px #ff9d00;
+  }
+  to {
+    text-shadow: 0 0 10px #ff9d00,
+                 0 0 20px #ff9d00,
+                 0 0 30px #ff9d00;
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 5px #00ff9d,
+                 0 0 10px #00ff9d,
+                 0 0 15px #00ff9d;
+  }
+  to {
+    text-shadow: 0 0 10px #00ff9d,
+                 0 0 20px #00ff9d,
+                 0 0 30px #00ff9d;
+  }
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}

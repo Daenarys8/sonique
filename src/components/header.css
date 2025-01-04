@@ -1,0 +1,31 @@
+.header-container {
+  background-image: url('/assets/header2.jpg'); /* Replace with your image path */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Futuristic title styles */
+.futuristic-title-green {
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.5),
+               0 0 20px rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+}
+
+.futuristic-title-orange {
+  text-shadow: 0 0 10px rgba(249, 115, 22, 0.5),
+               0 0 20px rgba(249, 115, 22, 0.3);
+  color: #f97316;
+}
+
+/* Coins counter animation */
+@keyframes coinPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.coins-counter {
+  animation: coinPulse 2s infinite ease-in-out;
+}

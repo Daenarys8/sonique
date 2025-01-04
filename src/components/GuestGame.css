@@ -1,0 +1,18 @@
+.guest-game-wrapper {
+    background: url('/assets/background.png') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .guest-game-header {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+  }
+  
+  .guest-game-content {
+    margin-top: 2rem;
+  }
+  
