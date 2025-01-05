@@ -1,17 +1,21 @@
 import React from 'react';
-import { Star, Gamepad2, Trophy } from 'lucide-react';
+import { Star, Gamepad2, Trophy, Heart } from 'lucide-react';
 import type { UserProfile } from '../types/game';
 import './gameprogress.css';
 
 type GameProgressProps = {
   profile: UserProfile;
+  hp: number; // HP passed as a prop
 };
 
-export function GameProgress({ profile }: GameProgressProps) {
+export function GameProgress({ profile, hp }: GameProgressProps) {
   const experienceToNextLevel = (Math.floor(profile.stats.totalScore / 1000) + 1) * 1000 - profile.stats.totalScore;
   const currentLevel = Math.floor(profile.stats.totalScore / 1000) + 1;
   const progressInLevel = (profile.stats.totalScore % 1000) / 10;
-  
+
+  // Health percentage calculation
+  const hpPercentage = (hp / 5) * 100; // Assuming max HP is 5
+
   return (
     <div className="game-progress-container relative overflow-hidden rounded-xl shadow-2xl">
       {/* Background with overlay */}
@@ -32,7 +36,7 @@ export function GameProgress({ profile }: GameProgressProps) {
         <div className="space-y-6">
           {/* XP Progress */}
           <div className="progress-section">
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center mb-1">
               <span className="text-yellow-400 font-gaming text-sm">
                 LEVEL {currentLevel}
               </span>
@@ -41,7 +45,7 @@ export function GameProgress({ profile }: GameProgressProps) {
               </span>
             </div>
             
-            {/* Custom progress bar */}
+            {/* Custom XP progress bar */}
             <div className="progress-bar-container">
               <div className="progress-bar-background" />
               <div 
@@ -58,9 +62,32 @@ export function GameProgress({ profile }: GameProgressProps) {
               </div>
             </div>
             
-            <div className="text-center mt-2">
+            <div className="text-center mt-1">
               <span className="text-cyan-400 font-gaming text-sm glow-text">
                 {experienceToNextLevel} XP to next level
+              </span>
+            </div>
+          </div>
+
+          {/* HP Progress */}
+          <div className="progress-section">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-red-400 font-gaming text-sm">HP</span>
+              <span className="text-green-400 font-gaming text-sm">Max HP</span>
+            </div>
+
+            {/* HP Progress Bar */}
+            <div className="progress-bar-container">
+              <div className="progress-bar-background" />
+              <div 
+                className="progress-bar-fill bg-red-500"
+                style={{ width: `${hpPercentage}%` }}
+              />
+            </div>
+
+            <div className="text-center mt-1">
+              <span className="text-white font-gaming text-sm glow-text">
+                {hp} / 5 HP remaining
               </span>
             </div>
           </div>

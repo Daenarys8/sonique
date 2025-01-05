@@ -5,6 +5,13 @@ export default {
     extend: {
       animation: {
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce-slow': 'bounce 2s infinite',
+      },
+      keyframes: {
+        pulse: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.2)', opacity: '0.5' },
+        },
       },
     },
   },
@@ -12,7 +19,10 @@ export default {
     extend: {
       opacity: ['disabled'],
       cursor: ['disabled'],
+      scrollbar: ['rounded', 'dark'],
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 };

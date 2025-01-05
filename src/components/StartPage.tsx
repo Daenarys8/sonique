@@ -61,7 +61,7 @@ export function StartPage() {
       <span className="futuristic-title-green">son</span>
       <span className="futuristic-title-orange">IQ</span>
       <span className="futuristic-title-green">ue</span>
-      <span className="futuristic-title-green"> challenge</span>
+      <span className="futuristic-title-green"> worlds</span>
     </>
   );
 

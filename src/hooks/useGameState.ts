@@ -10,7 +10,6 @@ export function useGameState(
   const defaultCategory: Category = {
     id: 'default',
     name: 'Default',
-    icon: 'default-icon',
     progress: 0,
     totalPuzzles: 0,
     description: '',
