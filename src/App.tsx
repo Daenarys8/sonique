@@ -70,7 +70,7 @@ function GameContent() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const { userProfile, updateCoins, completeCategory } = useGameState();
   const { isSoundEnabled } = useContext(SoundContext); // Add this context for sound settings
-
+  const [hp, setHp] = useState(4);
   const handleCategorySelect = useCallback((
     category: Omit<Category, 'description' | 'difficulty'> & { 
       description?: string; 
@@ -112,7 +112,7 @@ function GameContent() {
     <main className="max-w-7xl mx-auto py-8 px-4 relative z-10">
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
-          <GameProgress profile={userProfile} />
+          <GameProgress profile={userProfile} hp={hp} />
           <CategoryGrid onCategorySelect={handleCategorySelect} />
         </div>
         <div>

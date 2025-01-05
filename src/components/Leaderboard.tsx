@@ -24,13 +24,12 @@ const getRankIcon = (rank: number) => {
 
 export function Leaderboard() {
   return (
-    <div className="leaderboard-container relative overflow-hidden rounded-xl shadow-2xl">
+    <div className="leaderboard-container relative overflow-hidden rounded-xl shadow-2xl w-[500px]">
       {/* Background with overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 backdrop-blur-sm" />
 
-      {/* Content */}
-      <div className="relative z-10 p-6">
-        {/* Header */}
+      {/* Fixed Header */}
+      <div className="relative z-10 p-6 pb-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="trophy-icon-wrapper">
             <Trophy className="w-8 h-8 text-yellow-400" />
@@ -39,31 +38,34 @@ export function Leaderboard() {
             Leaderboard
           </h2>
         </div>
+      </div>
 
+      {/* Scrollable Content */}
+      <div className="relative z-10 px-6 pb-6 overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         {/* Leaderboard entries */}
         <div className="space-y-3">
           {mockLeaderboard.map((entry) => (
             <div
               key={entry.rank}
-              className="leaderboard-entry group"
+              className="leaderboard-entry group flex items-center justify-between w-full"
             >
               {/* Rank and Username */}
               <div className="flex items-center gap-4">
-                <div className="rank-badge">
+                <div className="rank-badge flex-shrink-0">
                   {getRankIcon(entry.rank)}
                 </div>
-                <span className="font-gaming text-white text-lg">
+                <span className="font-gaming text-white text-lg min-w-[120px]">
                   {entry.username}
                 </span>
               </div>
 
               {/* Score and Coins */}
-              <div className="flex items-center gap-6">
-                <div className="score-badge">
+              <div className="flex items-center gap-4 flex-shrink-0">
+                <div className="score-badge whitespace-nowrap">
                   {entry.score} pts
                 </div>
-                <div className="coins-badge">
-                  {entry.coins} 
+                <div className="coins-badge whitespace-nowrap">
+                  {entry.coins}
                   <span className="ml-1 animate-bounce">🪙</span>
                 </div>
               </div>

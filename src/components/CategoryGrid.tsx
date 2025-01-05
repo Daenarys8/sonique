@@ -123,7 +123,7 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
       </button>
       <div className="worlds-container">
         <h2 className="pick-a-challenge-title text-2xl text-center font-bold text-white-800 mb-6">
-            sonIQue Worlds
+            Sonique Worlds
         </h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-6 p-8">
