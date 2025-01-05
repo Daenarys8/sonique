@@ -2,7 +2,64 @@
   background-image: url('/assets/leaderboard-bg.jpg');
   background-size: cover;
   background-position: center;
-  min-height: 400px;
+  height: 400px; /* Changed from min-height to fixed height */
+  width: 500px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Add a wrapper for the scrollable content */
+.leaderboard-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  /* Add custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Custom scrollbar for webkit browsers */
+.leaderboard-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.leaderboard-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.leaderboard-content::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+/* Header section that stays fixed */
+.leaderboard-header {
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  background: inherit;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.leaderboard-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  min-width: 460px;
 }
 
 .trophy-icon-wrapper {
@@ -28,6 +85,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   transition: all 0.3s ease;
+  min-width: 460px; /* Added to ensure entry width */
 }
 
 .leaderboard-entry:hover {
@@ -47,11 +105,14 @@
   border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Update the badges to prevent overflow */
 .score-badge, .coins-badge {
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-weight: 600;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  white-space: nowrap; /* Prevent wrapping */
+  min-width: fit-content; /* Ensure content fits */
 }
 
 .score-badge {
@@ -94,4 +155,17 @@
 
 .leaderboard-entry:nth-child(3) {
   background: linear-gradient(135deg, rgba(205, 127, 50, 0.1), rgba(255, 255, 255, 0.1));
+}
+
+/* Add spacing between username and badges */
+.leaderboard-entry > div:first-child {
+  margin-right: 1rem; /* Add space between username and badges */
+  flex: 1; /* Allow username section to take available space */
+}
+
+/* Adjust the badges container */
+.leaderboard-entry > div:last-child {
+  display: flex;
+  gap: 0.75rem; /* Consistent gap between badges */
+  flex-shrink: 0; /* Prevent badges from shrinking */
 }
