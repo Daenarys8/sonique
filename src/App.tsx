@@ -144,9 +144,23 @@ function AppRoutes() {
   return (
     <div className="min-h-screen relative">
       <Routes>
-        {/* Your routes */}
-        <Route path="/signup" element={<SignupForm />} />
-        <Route path="/confirm-signup" element={<ConfirmSignup />} />
+        {/* Public Routes */}
+        <Route 
+          path="/signup" 
+          element={
+            <PublicRoute>
+              <SignupForm />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/confirm-signup" 
+          element={
+            <PublicRoute>
+              <ConfirmSignup />
+            </PublicRoute>
+          } 
+        />
         <Route 
           path="/login" 
           element={
@@ -155,8 +169,22 @@ function AppRoutes() {
             </PublicRoute>
           } 
         />
-        <Route path="/guest" element={<GuestGame />} />
-        <Route path="/" element={<StartPage />} />
+        <Route 
+          path="/guest" 
+          element={
+            <PublicRoute>
+              <GuestGame />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/" 
+          element={
+            <PublicRoute>
+              <StartPage />
+            </PublicRoute>
+          } 
+        />
 
         {/* Protected Routes */}
         <Route 
