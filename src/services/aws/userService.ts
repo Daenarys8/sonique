@@ -1,6 +1,7 @@
 import { GetCommand, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { getDynamoDb } from './config.ts';
 import type { UserProfile } from '../../types/game';
+import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 
 const USERS_TABLE = 'sonique-users';
 
@@ -103,25 +104,40 @@ export async function createUserProfile(
   initialProfile: Partial<UserProfile> = {}
 ): Promise<void> {
   try {
-    const defaultProfile: UserProfile = {
-      ...getDefaultProfile(userId, userId),
+    const dynamoDb = await getDynamoDb();
+    const defaultProfile = {
+      ...getDefaultProfile(userId, initialProfile.username || userId),
       ...initialProfile,
+      userId,
       updatedAt: new Date().toISOString()
     };
 
-    const dynamoDb = await getDynamoDb();
+    // Add this detailed logging
+    console.log('Profile data to save:', JSON.stringify(defaultProfile, null, 2));
+    console.log('Command parameters:', JSON.stringify({
+      TableName: USERS_TABLE,
+      Item: defaultProfile
+    }, null, 2));
+
     await dynamoDb.send(
       new PutCommand({
         TableName: USERS_TABLE,
-        Item: defaultProfile,
-        ConditionExpression: 'attribute_not_exists(username)'
+        Item: defaultProfile
       })
     );
-  } catch (error) {
-    console.error('Error creating user profile:', error);
+  } catch (error: any) {
+    // Enhance error logging
+    console.error('DynamoDB error details:', {
+      message: error.message,
+      name: error.name,
+      code: error.$metadata?.httpStatusCode,
+      requestId: error.$metadata?.requestId,
+      error: JSON.stringify(error, null, 2)
+    });
     throw error;
   }
 }
+
 
 export function getDefaultProfile(userId: string, username: string): UserProfile {
   return {

@@ -17,11 +17,21 @@ interface AuthUser {
   profile?: UserProfile;
 }
 
-export function Profile({ onClose, onLogin, onSignup, onLogout }: ProfileProps) {
+export function Profile({ onClose, onLogin, onSignup }: ProfileProps) {
   const navigate = useNavigate();
-  const { currentUser, isGuest } = useAuth();
+  const { currentUser, isGuest, logout, loading } = useAuth();
   const userProfile = (currentUser as AuthUser)?.profile;
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      onClose(); // Close the profile modal
+      navigate('/login', { replace: true }); // Redirect to login page
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Optionally add error handling UI here
+    }
+  };
 
   const renderUserStats = () => {
     if (isGuest) {
@@ -41,13 +51,13 @@ export function Profile({ onClose, onLogin, onSignup, onLogout }: ProfileProps) 
         <div className="flex justify-between items-center py-2 border-b">
           <span className="text-gray-600">Total Score</span>
           <span className="font-semibold">
-          {stats?.totalScore || 0}
+            {stats?.totalScore || 0}
           </span>
         </div>
         <div className="flex justify-between items-center py-2 border-b">
           <span className="text-gray-600">Coins Earned</span>
           <span className="font-semibold">
-          {stats?.totalCoins || 0}
+            {stats?.totalCoins || 0}
           </span>
         </div>
         {stats?.completedCategories && stats.completedCategories.length > 0 && (
@@ -59,11 +69,18 @@ export function Profile({ onClose, onLogin, onSignup, onLogout }: ProfileProps) 
           </div>
         )}
         <button
-            onClick={() => onLogout ? onLogout() : navigate('/login')}
-            className="mt-6 w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Logout
-          </button>
+          onClick={handleLogout}
+          disabled={loading}
+          className="mt-6 w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 
+            transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+            flex items-center justify-center"
+        >
+          {loading ? (
+            <span>Logging out...</span>
+          ) : (
+            'Logout'
+          )}
+        </button>
       </div>
     );
   };
@@ -100,37 +117,51 @@ export function Profile({ onClose, onLogin, onSignup, onLogout }: ProfileProps) 
       </div>
 
       {isGuest ? (
-        <div className="space-y-4 mb-6">
-          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-            <p className="text-yellow-800">
-              Playing as a guest means your progress won't be saved. 
-              Create an account to:
-            </p>
-            <ul className="mt-2 list-disc list-inside text-yellow-700">
-              <li>Save your progress</li>
-              <li>Track your statistics</li>
-              <li>Compete on leaderboards</li>
-              <li>Access more challenges</li>
-            </ul>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-          <button
-              onClick={() => onSignup ? onSignup() : navigate('/signup')}
-              className="py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              Sign Up
-            </button>
-            <button
-              onClick={() => onLogin ? onLogin() : navigate('/login')}
-              className="py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              Login
-            </button>
-          </div>
+      <div className="space-y-4 mb-6">
+        <div className="bg-yellow-900/50 p-4 rounded-lg border border-yellow-500/30">
+          <p className="text-yellow-200">
+            Playing as a guest means your progress won't be saved. 
+            Create an account to:
+          </p>
+          <ul className="mt-2 list-disc list-inside text-yellow-300">
+            <li>Save your progress</li>
+            <li>Track your statistics</li>
+            <li>Compete on leaderboards</li>
+            <li>Access more challenges</li>
+          </ul>
         </div>
-      ) : (
-        renderUserStats()
-        )}
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => {
+              onClose(); // Close the profile modal first
+              if (onSignup) {
+                onSignup();
+              } else {
+                navigate('/signup');
+              }
+            }}
+            className="py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Sign Up
+          </button>
+          <button
+            onClick={() => {
+              onClose(); // Close the profile modal first
+              if (onLogin) {
+                onLogin();
+              } else {
+                navigate('/login');
+              }
+            }}
+            className="py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    ) : (
+      renderUserStats()
+    )}
     </div>
     </div>
   );

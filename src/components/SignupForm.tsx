@@ -25,43 +25,44 @@ export function SignupForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Clear any previous errors
+    setError(null);
+    setIsLoading(true);
+  
+    if (!username) {
+      setError('Username is required');
+      return;
+    }
     
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
     
-    setIsLoading(true);
-    setError('Creating your account...');
     try {
-      const { isSignUpComplete, userId, username: createdUsername } = await signUp({
+      // Proceed with signup if username is unique
+      const { userId } = await signUp({
         username,
         password,
         options: {
           userAttributes: {
             email
-          },
-          autoSignIn: true
+          }
         }
       });
-      console.log('Sign up status:', isSignUpComplete);
-
-      // Create user profile
-      if (userId) {
-        const defaultProfile = getDefaultProfile(userId, createdUsername);
-        await createUserProfile(userId, defaultProfile);
+  
+      if (!userId) {
+        throw new Error('No user ID returned from signup');
       }
-
-      // Always navigate to confirmation page after sign-up
-    setError('Account created successfully! Redirecting to confirmation...');
-    setTimeout(() => {
+  
+      // Store both profile data and password temporarily
+      const defaultProfile = getDefaultProfile(userId, username);
+      sessionStorage.setItem('pendingUserProfile', JSON.stringify(defaultProfile));
+      sessionStorage.setItem('tempPassword', password);  // Store password for confirmation step
+  
+      setError('Account created successfully! Redirecting to confirmation...');
       navigate('/confirm-signup', { state: { username } });
-    }, 1000);
-      // If sign-up is not complete, navigate to confirmation page
-      if (!isSignUpComplete) {
-        navigate('/confirm-signup', { state: { username } });
-      }
+
+  
     } catch (err) {
       console.error('Signup failed:', err);
       setError('Failed to create account. Please try again.');
@@ -69,6 +70,7 @@ export function SignupForm() {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center relative">

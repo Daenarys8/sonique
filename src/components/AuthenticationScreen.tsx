@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { LoginForm } from './LoginForm';
 import '../styles/fonts.css';
 import { initializeBackgroundMusic, playBackgroundMusic, stopBackgroundMusic } from '../utils/audioUtils';
@@ -8,13 +8,18 @@ import { useAuth } from '../contexts/AuthContext';
 export function AuthenticationScreen() {
   const { currentUser, loading } = useAuth();
   const [title, setTitle] = useState('');
+  const location = useLocation();
+  const [message] = useState(location.state?.message || '');
+  const from = location.state?.from?.pathname || "/game";
 
   const [backgroundMusic] = useState(() => initializeBackgroundMusic('/assets/audio/thriller.mp3'));
   const fullTitle = 'sonIQue';
   
-    if (!loading && currentUser) {
-      return <Navigate to="/game" replace />;
-    }
+  // Redirect to original destination or game if authenticated
+  if (!loading && currentUser) {
+    return <Navigate to={from} replace />;
+  }
+
   // Effect to animate the title and message
   useEffect(() => {
     // Play background music
@@ -76,9 +81,16 @@ export function AuthenticationScreen() {
           {renderTitle(title)}
         </h1>
 
+        {/* Redirect Message */}
+        {message && (
+          <div className="mb-6 px-4 py-3 rounded-lg bg-indigo-600/50 text-white border border-indigo-400/30">
+            {message}
+          </div>
+        )}
+
         {/* Login Form */}
         <div className="w-full max-w-md mx-auto">
-          <LoginForm />
+          <LoginForm redirectPath={from} />
         </div>
       </div>
     </div>
