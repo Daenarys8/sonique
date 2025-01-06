@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Header } from './Header';
@@ -7,6 +7,11 @@ import { Profile } from './Profile';
 import './GuestGame.css';
 import { GameProgress } from './GameProgress';
 import { useGameState } from '../hooks/useGameState';
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls, Environment } from '@react-three/drei'
+import { MODEL_PATHS, ANIMATION_DURATIONS } from '../constants/modelPaths';
+import { Character3D } from './Character3D'
+
 
 interface Answer {
   answer_a: string;
@@ -18,12 +23,12 @@ interface Answer {
 }
 
 interface CorrectAnswers {
-  answer_a_correct: boolean;
-  answer_b_correct: boolean;
-  answer_c_correct: boolean;
-  answer_d_correct: boolean;
-  answer_e_correct?: boolean;
-  answer_f_correct?: boolean;
+  answer_a_correct: "true" | "false";
+  answer_b_correct: "true" | "false";
+  answer_c_correct: "true" | "false";
+  answer_d_correct: "true" | "false";
+  answer_e_correct: "true" | "false";
+  answer_f_correct: "true" | "false";
 }
 
 // Add this type to ensure type safety
@@ -54,6 +59,15 @@ export function GuestGame() {
   const [showProfile, setShowProfile] = useState(false);
   const [hp, setHp] = useState(5); // Add this with other state declarations
   const { userProfile } = useGameState();
+  const [playerState, setPlayerState] = useState({
+    currentAnimation: 0
+  });
+  
+  const [npcState, setNpcState] = useState({
+    currentAnimation: 0
+  });
+  
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     // Initial question fetch when component mounts
@@ -94,47 +108,123 @@ export function GuestGame() {
       setIsLoading(false);
     }
   };
+
+  const resetModels = useCallback(() => {
+    // Reset both models to idle animation (index 0)
+    setPlayerState(prev => ({
+      ...prev,
+      currentAnimation: 0
+    }));
+    
+    setNpcState(prev => ({
+      ...prev,
+      currentAnimation: 0
+    }));
+    
+    setIsAnimating(false);
+  }, []);
   
-  const handleAnswerSelect = (answerKey: AnswerKey) => {
+
+  // Update your animation sequence function
+  const playAnimationSequence = useCallback((
+    playerAnimIndex: number,
+    npcAnimIndex: number,
+    duration: number
+  ) => {
+    setIsAnimating(true);
+    
+    setPlayerState(prev => ({
+      ...prev,
+      currentAnimation: playerAnimIndex
+    }));
+    
+    setNpcState(prev => ({
+      ...prev,
+      currentAnimation: npcAnimIndex
+    }));
+  
+    // Reset after duration if game isn't complete
+    setTimeout(() => {
+      if (!gameComplete) {
+        resetModels();
+      }
+    }, duration);
+  }, [gameComplete, resetModels]);
+  
+  const handleAnswerSelect = useCallback((answerKey: AnswerKey) => {
     if (showResult) return; // Prevent selecting after showing result
     setSelectedAnswer(answerKey);
-  };
+  }, [isAnimating]);
   
   const getCurrentQuestion = (): QuizQuestion | undefined => {
     return questions[currentQuestionIndex];
   };
 
-  const handleNextQuestion = () => {
-    if (!selectedAnswer) return;
-    
+  const handleNextQuestion = useCallback(() => {
+    if (!selectedAnswer || isAnimating) return;
+  
     const currentQuestion = getCurrentQuestion();
     if (!currentQuestion) return;
   
     const correctAnswerKey = `${selectedAnswer}_correct` as CorrectAnswerKey;
-    const isCorrect = currentQuestion.correct_answers[correctAnswerKey];
-    
+    const isCorrect = currentQuestion.correct_answers[correctAnswerKey] === "true";
+  
     if (isCorrect) {
       setScore(prev => prev + 100);
-      // Increase HP if correct, but don't exceed 5
       setHp(prev => Math.min(prev + 1, 5));
+      
+      // Player attacks, NPC gets hit
+      playAnimationSequence(
+        1, // Player attack animation index
+        2, // NPC get_hit animation index
+        ANIMATION_DURATIONS.ATTACK
+      );
     } else {
-      // Decrease HP if wrong
       setHp(prev => prev - 1);
+      
+      // NPC attacks, Player gets hit
+      playAnimationSequence(
+        2, // Player hit animation index
+        1, // NPC attack animation index
+        ANIMATION_DURATIONS.ATTACK
+      );
+  
+      // Check for game over
+      if (hp <= 1) {
+        playAnimationSequence(
+          3, // Player hit/defeat animation index
+          3, // NPC victory animation index
+          ANIMATION_DURATIONS.DEATH
+        );
+        setGameComplete(true);
+        return;
+      }
     }
   
     setSelectedAnswer(null);
     setShowResult(false);
-  
-    // Check if game should end due to HP loss
-    if (hp <= 1 && !isCorrect) {
-      setGameComplete(true);
-      return;
-    }
-  
-    // Fetch next question when moving to next
-    fetchQuestion();
     setCurrentQuestionIndex(prev => prev + 1);
-  };
+    fetchQuestion();
+  }, [selectedAnswer, isAnimating, hp, playAnimationSequence, getCurrentQuestion, fetchQuestion]);
+
+  // Clean up animations when component unmounts
+  useEffect(() => {
+    return () => {
+      resetModels();
+    };
+  }, [resetModels]);
+
+  // Update game complete check
+  useEffect(() => {
+    if (currentQuestionIndex >= 5) {
+      playAnimationSequence(
+        2, // Player attack animation index
+        4, // NPC defeat animation index
+        ANIMATION_DURATIONS.VICTORY
+      );
+      setGameComplete(true);
+    }
+  }, [currentQuestionIndex, playAnimationSequence]);
   startGuestSession;
 
   // Update the game complete check
@@ -156,6 +246,15 @@ export function GuestGame() {
   };
 
   if (gameComplete) {
+    const handleReplay = () => {
+      // Reset game state for another round
+      setScore(0);
+      setHp(5);
+      setCurrentQuestionIndex(0);
+      setGameComplete(false); // Set gameComplete to false to hide game-over screen
+      fetchQuestion(); // Optionally fetch a new question set
+    };
+  
     return (
       <div
         className="guest-game-wrapper"
@@ -165,20 +264,20 @@ export function GuestGame() {
           backgroundPosition: 'center',
           minHeight: '100vh',
         }}
-          >
-        <Header 
+      >
+        <Header
           coins={score}
           onSettingsClick={() => setShowSettings(true)}
           onProfileClick={() => setShowProfile(true)}
           isGuest={true}
         />
         <div className="guest-game-complete flex flex-col items-center justify-center min-h-[400px] text-center text-white">
-            <h2 className="text-3xl font-bold mb-4">
-              {hp <= 0 ? 'Game Over!' : 'Level Complete!'}
-            </h2>
-            <p className="text-2xl mb-4">Final Score: {score}</p>
-            <p className="text-xl mb-4">Remaining HP: {hp}</p>
-            <p className="mb-6">Sign up to save your progress and access more gameplay!</p>
+          <h2 className="text-3xl font-bold mb-4">
+            {hp <= 0 ? 'Game Over!' : 'Level Complete!'}
+          </h2>
+          <p className="text-2xl mb-4">Final Score: {score}</p>
+          <p className="text-xl mb-4">Remaining HP: {hp}</p>
+          <p className="mb-6">Sign up to save your progress and access more gameplay!</p>
           <div className="flex gap-4">
             <button
               onClick={handleSignUp}
@@ -192,6 +291,12 @@ export function GuestGame() {
             >
               Login
             </button>
+            <button
+              onClick={handleReplay}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
+              Replay
+            </button>
           </div>
         </div>
       </div>
@@ -200,21 +305,99 @@ export function GuestGame() {
 
   return (
     <div
-          className="guest-game-wrapper"
-          style={{
-            backgroundImage: 'url(/assets/guestgame.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            minHeight: '100vh',
-          }}
-        >
+        className="guest-game-wrapper"
+        style={{
+          backgroundImage: 'url(/assets/guestgame.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          minHeight: '100vh',
+          position: 'relative',
+          overflow: 'hidden', // Ensures models stay within bounds
+        }}
+      >
       <Header 
         coins={score}
         onSettingsClick={() => setShowSettings(true)}
         onProfileClick={() => setShowProfile(true)}
         isGuest={true}
       />
+      {/* Left Model */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: '50%', // Left half of the screen
+            pointerEvents: 'none', // Prevents interfering with UI interactions
+          }}
+        >
+          <Canvas camera={{ position: [-5, 2, 5], fov: 50 }}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 5]} intensity={10} />
+            <Character3D
+              modelPath={MODEL_PATHS.PLAYER.BASE.model}
+              animationPaths={MODEL_PATHS.PLAYER.BASE.animations}
+              position={[-1.5, -2.08, 1]}
+              scale={0.02} // Adjust the size
+              rotation={[0, -Math.PI / 4, 0]} // Rotate slightly to face inward
+              currentAnimation={playerState.currentAnimation}
+            />
+            <Environment preset="park" />
+          </Canvas>
+        </div>
 
+        {/* Right Model */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            height: '100%',
+            width: '50%', // Right half of the screen
+            pointerEvents: 'none', // Prevents interfering with UI interactions
+          }}
+        >
+          <Canvas camera={{ position: [5, 2, 5], fov: 50 }}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[-10, 10, 5]} intensity={1} />
+            <Character3D
+              modelPath={MODEL_PATHS.NPC.BASE.model}
+              animationPaths={MODEL_PATHS.NPC.BASE.animations}
+              position={[2, -2, 0]} // Position adjusted for right side
+              scale={0.02} // Adjust the size
+              rotation={[0, -Math.PI / 0.25, 0]} // Rotate to face left model
+              currentAnimation={npcState.currentAnimation}
+            />
+            <Environment preset="park" />
+          </Canvas>
+        </div>
+
+        {/* Left Model */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: '50%', // Left half of the screen
+            pointerEvents: 'none', // Prevents interfering with UI interactions
+          }}
+        >
+          <Canvas camera={{ position: [-5, 2, 5], fov: 50 }}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 5]} intensity={10} />
+            <Character3D
+              modelPath={MODEL_PATHS.PLAYER.BASE.model}
+              animationPaths={MODEL_PATHS.PLAYER.BASE.animations}
+              position={[-2, -2, 0]} // Position adjusted for left side
+              scale={0.02} // Adjust the size
+              rotation={[0, Math.PI / 0.5, 0]} // Rotate to face right model
+              currentAnimation={playerState.currentAnimation}
+            />
+            <Environment preset="park" />
+          </Canvas>
+        </div>
       {/* Game Progress Container - Positioned below the Header */}
         <div 
           className="game-progress-container mt-0 flex justify-center"
@@ -317,7 +500,7 @@ export function GuestGame() {
                     onClick={handleNextQuestion}
                     className="px-8 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-bold transition-colors"
                   >
-                    {currentQuestionIndex >= 4 ? 'Finish Conquest' : 'Load Weapon'}
+                    {currentQuestionIndex >= 4 ? 'Finish' : 'Sonique'}
                   </button>
                 )}
               </div>
