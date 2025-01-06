@@ -11,7 +11,14 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+          fetch-depth: 0
+
+      - name: Pull LFS objects
+        run: git lfs pull
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -47,7 +54,16 @@ jobs:
       - name: Deploy to S3
         run: |
           echo "Deploying to S3..."
-          aws s3 sync dist/ s3://sonique --delete
+          aws s3 sync dist/ s3://sonique --delete \
+            --cache-control "max-age=31536000" \
+            --exclude "*.html" \
+            --exclude "*.json" \
+            --size-only
+          
+          aws s3 sync dist/ s3://sonique \
+            --cache-control "no-cache" \
+            --include "*.html" \
+            --include "*.json"
           echo "S3 deployment complete"
 
       - name: Invalidate CloudFront Cache
