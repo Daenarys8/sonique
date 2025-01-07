@@ -360,7 +360,7 @@ export function GuestGame() {
         >
           <Canvas camera={{ position: [5, 2, 5], fov: 50 }}>
             <ambientLight intensity={0.5} />
-            <directionalLight position={[-10, 10, 5]} intensity={1} />
+            <directionalLight position={[-10, 10, 5]} intensity={10} />
             <Character3D
               modelPath={MODEL_PATHS.NPC.BASE.model}
               animationPaths={MODEL_PATHS.NPC.BASE.animations}
@@ -386,7 +386,7 @@ export function GuestGame() {
         >
           <Canvas camera={{ position: [-5, 2, 5], fov: 50 }}>
             <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 5]} intensity={10} />
+            <directionalLight position={[10, 10, 5]} intensity={7} />
             <Character3D
               modelPath={MODEL_PATHS.PLAYER.BASE.model}
               animationPaths={MODEL_PATHS.PLAYER.BASE.animations}
