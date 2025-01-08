@@ -20,7 +20,7 @@ export function StartPage() {
 
   // Preload audio
   useEffect(() => {
-    const audio = new Audio('/sounds/intro.wav');
+    const audio = new Audio('/sounds/intro.mp3');
     audio.preload = 'auto';
     // audio.play();
     let messageInterval: NodeJS.Timeout;
