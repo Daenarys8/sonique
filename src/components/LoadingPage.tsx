@@ -35,8 +35,8 @@ export function LoadingPage({ onLoadComplete }: LoadingPageProps) {
   const soundManagerRef = useRef<SoundManager | null>(null);
 
   useEffect(() => {
-    // Background music setup (intro.wav)
-    backgroundAudioRef.current = new Audio('/sounds/intro.wav');
+    // Background music setup (intro.mp3)
+    backgroundAudioRef.current = new Audio('/sounds/intro.mp3');
     backgroundAudioRef.current.loop = true; // Loop the background music
     backgroundAudioRef.current.preload = 'auto';
 

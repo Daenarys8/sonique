@@ -94,7 +94,7 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
   }, []);
 
   useEffect(() => {
-      const audio = new Audio('/sounds/intro.wav');
+      const audio = new Audio('/sounds/intro.mp3');
       audio.preload = 'auto';
       audio.play();
       // Cleanup function to clear the intervals
