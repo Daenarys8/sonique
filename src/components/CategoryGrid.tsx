@@ -44,11 +44,13 @@ type CategoryGridProps = {
 export class SoundManager {
   private soundPools: Map<string, HTMLAudioElement[]>;
   private currentIndices: Map<string, number>;
+  private activeTimeouts: Map<string, number[]>;
   private readonly poolSize: number;
 
   constructor(sounds: typeof SOUND_EFFECTS, poolSize: number = 3) {
     this.soundPools = new Map();
     this.currentIndices = new Map();
+    this.activeTimeouts = new Map();
     this.poolSize = poolSize;
 
     // Initialize pools for each sound type
@@ -62,19 +64,116 @@ export class SoundManager {
         })
       );
       this.currentIndices.set(key, 0);
+      this.activeTimeouts.set(key, []);
     });
   }
 
-  play(soundType: keyof typeof SOUND_EFFECTS) {
+  play(soundType: keyof typeof SOUND_EFFECTS, duration?: number, fadeOutDuration: number = 1000) {
     const pool = this.soundPools.get(soundType);
     const currentIndex = this.currentIndices.get(soundType) || 0;
 
     if (pool) {
       const sound = pool[currentIndex];
       sound.currentTime = 0;
+      sound.volume = 0.2;
+
+      // Enable looping if duration is longer than audio length
+      if (duration) {
+        sound.loop = true;
+      }
+
       sound.play();
+
+      // Update the current index for the next play
       this.currentIndices.set(soundType, (currentIndex + 1) % this.poolSize);
+
+      if (duration) {
+        const timeouts = this.activeTimeouts.get(soundType) || [];
+        
+        // Start fade out before duration ends
+        if (fadeOutDuration > 0) {
+          const fadeStartTime = duration - fadeOutDuration;
+          const fadeTimeout = window.setTimeout(() => {
+            this.fade(sound, 0.2, 0, fadeOutDuration);
+          }, fadeStartTime);
+          timeouts.push(fadeTimeout);
+        }
+
+        // Stop the sound after duration
+        const stopTimeout = window.setTimeout(() => {
+          sound.loop = false; // Disable looping
+          sound.pause();
+          sound.currentTime = 0;
+          sound.volume = 0.2;
+        }, duration);
+        
+        timeouts.push(stopTimeout);
+        this.activeTimeouts.set(soundType, timeouts);
+
+        return sound;
+      }
     }
+  }
+
+  stop(soundType: keyof typeof SOUND_EFFECTS) {
+    const pool = this.soundPools.get(soundType);
+    if (pool) {
+      pool.forEach(sound => {
+        sound.loop = false; // Disable looping
+        sound.pause();
+        sound.currentTime = 0;
+        sound.volume = 0.2;
+      });
+
+      // Clear any active timeouts
+      const timeouts = this.activeTimeouts.get(soundType);
+      if (timeouts) {
+        timeouts.forEach(timeout => window.clearTimeout(timeout));
+        this.activeTimeouts.set(soundType, []);
+      }
+    }
+  }
+
+  private fade(audio: HTMLAudioElement, startVolume: number, endVolume: number, duration: number) {
+    const startTime = performance.now();
+    const volumeDiff = endVolume - startVolume;
+
+    const updateVolume = () => {
+      const currentTime = performance.now();
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      audio.volume = startVolume + (volumeDiff * progress);
+
+      if (progress < 1) {
+        requestAnimationFrame(updateVolume);
+      }
+    };
+
+    requestAnimationFrame(updateVolume);
+  }
+
+  stopAll() {
+    this.soundPools.forEach((pool, soundType) => {
+      this.stop(soundType);
+    });
+  }
+
+  setVolume(soundType: keyof typeof SOUND_EFFECTS, volume: number) {
+    const pool = this.soundPools.get(soundType);
+    if (pool) {
+      pool.forEach(sound => {
+        sound.volume = Math.max(0, Math.min(1, volume));
+      });
+    }
+  }
+
+  setGlobalVolume(volume: number) {
+    this.soundPools.forEach((pool) => {
+      pool.forEach(sound => {
+        sound.volume = Math.max(0, Math.min(1, volume));
+      });
+    });
   }
 }
 
