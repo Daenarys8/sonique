@@ -29,5 +29,5 @@ export const MODEL_PATHS = {
 export const ANIMATION_DURATIONS = {
   ATTACK: 4000,
   DEATH: 4000,
-  VICTORY: 4000
+  VICTORY: 7000
 } as const;

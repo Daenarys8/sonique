@@ -41,7 +41,7 @@ type CategoryGridProps = {
 };
 
 // Enhanced SoundManager to handle multiple sound types
-class SoundManager {
+export class SoundManager {
   private soundPools: Map<string, HTMLAudioElement[]>;
   private currentIndices: Map<string, number>;
   private readonly poolSize: number;
@@ -92,6 +92,15 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
       soundManagerRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+      const audio = new Audio('/sounds/intro.wav');
+      audio.preload = 'auto';
+      audio.play();
+      // Cleanup function to clear the intervals
+      return () => {
+      };
+    }, []);
 
   const playSound = (soundType: keyof typeof SOUND_EFFECTS) => {
     if (soundEnabled) {
