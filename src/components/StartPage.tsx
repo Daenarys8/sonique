@@ -1,19 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/fonts.css';
+import { SoundManager } from './CategoryGrid';
+
+const SOUND_EFFECTS = {
+  hover: '/sounds/hover-chime.mp3',
+  select: '/sounds/select-chime.wav',
+  success: '/sounds/success-chime.mp3'
+};
 
 export function StartPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [audioError, setAudioError] = useState(false);
   const [message, setMessage] = useState('');
+  const soundManagerRef = useRef<SoundManager | null>(null);
   const fullMessage = 
   "The Sonique Challenge awaits. Are you ready to push your mind to the limit? Test your intellect, unravel mysteries, and prove you're not just another player—you're a force to be reckoned with. Only the sharpest will conquer the obstacles ahead. Step into the arena. The challenge is on. Will you rise to the occasion?";
 
   // Preload audio
   useEffect(() => {
-    const audio = new Audio('/assets/thriller.mp3');
+    const audio = new Audio('/sounds/intro.wav');
     audio.preload = 'auto';
+    // audio.play();
     let messageInterval: NodeJS.Timeout;
     let currentIndex = 0;
 
@@ -38,8 +47,6 @@ export function StartPage() {
     setAudioError(false);
     
     try {
-      const audio = new Audio('/assets/thriller.mp3');
-      await audio.play();
       navigate('/guest');
     } catch (error) {
       console.error('Audio playback failed:', error);
@@ -64,6 +71,19 @@ export function StartPage() {
       <span className="futuristic-title-green"> worlds</span>
     </>
   );
+
+  useEffect(() => {
+          // Initialize sound manager with all sound effects
+          soundManagerRef.current = new SoundManager(SOUND_EFFECTS);
+      
+          return () => {
+            soundManagerRef.current = null;
+          };
+        }, []);
+    
+      const playSound = (soundType: keyof typeof SOUND_EFFECTS) => {
+          soundManagerRef.current?.play(soundType);
+      };
 
   return (
     <div 
@@ -104,6 +124,7 @@ export function StartPage() {
           <div className="flex gap-4 flex-col sm:flex-row">
             <button
               onClick={handleLogin}
+              onMouseEnter={() => playSound('hover')}
               disabled={isLoading}
               className={`
                 start-button px-12 py-6 text-3xl font-orbitron text-white 
@@ -122,6 +143,7 @@ export function StartPage() {
   
             <button
               onClick={handleStart}
+              onMouseEnter={() => playSound('hover')}
               disabled={isLoading}
               className={`
                 start-button px-12 py-6 text-3xl font-orbitron text-white 

@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { SoundManager } from './CategoryGrid';
 
 interface LoginFormProps {
   redirectPath?: string;
 }
+
+const SOUND_EFFECTS = {
+  hover: '/sounds/hover-chime.mp3',
+  select: '/sounds/select-chime.wav',
+  success: '/sounds/success-chime.mp3'
+};
 
 export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
   const [username, setUsername] = useState('');
@@ -12,6 +19,7 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { login, loginAsGuest, error } = useAuth();
   const navigate = useNavigate();
+  const soundManagerRef = useRef<SoundManager | null>(null);
   const handleSuccessfulLogin = () => {
     navigate(redirectPath, { replace: true });
   };
@@ -48,6 +56,19 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
   const handleForgotPassword = () => {
     navigate('/reset-password');
   };
+
+  useEffect(() => {
+        // Initialize sound manager with all sound effects
+        soundManagerRef.current = new SoundManager(SOUND_EFFECTS);
+    
+        return () => {
+          soundManagerRef.current = null;
+        };
+      }, []);
+  
+    const playSound = (soundType: keyof typeof SOUND_EFFECTS) => {
+        soundManagerRef.current?.play(soundType);
+    };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -107,6 +128,7 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
           <button
             type="submit"
             disabled={isLoading}
+            onMouseEnter={() => playSound('hover')}
             className="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white 
               bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 
               focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 
@@ -124,6 +146,7 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
             <button
               type="button"
               onClick={handleGuestLogin}
+              onMouseEnter={() => playSound('hover')}
               disabled={isLoading}
               className="w-1/2 py-2 px-4 border border-gray-500/50 rounded-md shadow-sm 
                 text-sm font-medium text-gray-300 hover:bg-gray-800 focus:outline-none 
@@ -136,6 +159,7 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
             <button
               type="button"
               onClick={() => navigate('/signup')}
+              onMouseEnter={() => playSound('hover')}
               disabled={isLoading}
               className="w-1/2 py-2 px-4 border border-indigo-500/50 rounded-md shadow-sm 
                 text-sm font-medium text-indigo-300 hover:bg-indigo-900/50 focus:outline-none 
