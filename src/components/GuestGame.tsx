@@ -108,19 +108,42 @@ export function GuestGame() {
     []
   );
 
+  
 
   useEffect(() => {
-          // Initialize sound manager with all sound effects
-          soundManagerRef.current = new SoundManager(SOUND_EFFECTS);
+    // Initialize sound manager with all sound effects
+    soundManagerRef.current = new SoundManager(SOUND_EFFECTS);
+  
+    return () => {
+      // Clean up any playing sounds before nullifying
+      soundManagerRef.current?.stopAll();
+      soundManagerRef.current = null;
+    };
+  }, []);
+  
+  const playSound = (soundType: keyof typeof SOUND_EFFECTS, duration?: number) => {
+    try {
+      if (!soundManagerRef.current) {
+        console.warn('Sound manager not initialized');
+        return;
+      }
+  
+      const sound = soundManagerRef.current.play(soundType);
       
-          return () => {
-            soundManagerRef.current = null;
-          };
-        }, []);
-    
-      const playSound = (soundType: keyof typeof SOUND_EFFECTS) => {
-          soundManagerRef.current?.play(soundType);
-      };
+      if (duration && sound) {
+        // Stop the sound after the specified duration
+        const timeoutId = setTimeout(() => {
+          soundManagerRef.current?.stop(soundType);
+        }, duration);
+  
+        // Clean up timeout if component unmounts
+        return () => clearTimeout(timeoutId);
+      }
+    } catch (error) {
+      console.error('Error playing sound:', error);
+    }
+  };
+  
 
   useEffect(() => {
     // Load and play music when the game starts
@@ -137,12 +160,12 @@ export function GuestGame() {
     };
   }, []);
 
-  useEffect(() => {
-    if (gameComplete) {
+  //useEffect(() => {
+  //  if (gameComplete) {
       // Stop the music if the game completes
-      backgroundMusicRef.current?.pause();
-    }
-  }, [gameComplete]);
+  //    backgroundMusicRef.current?.pause();
+  //  }
+  //}, [gameComplete]);
 
   useEffect(() => {
     // Initial question fetch when component mounts
@@ -253,7 +276,7 @@ export function GuestGame() {
       triggerGif('player', 'cast', 4000); // Player "cast" GIF
       triggerGif('npc', 'suffer', 4000); // NPC "suffer" GIF
       playSound('correct');
-      playSound('npccry');
+      playSound('npccry', 10000);
       
       // Player attacks, NPC gets hit
       playAnimationSequence(
@@ -270,8 +293,8 @@ export function GuestGame() {
       triggerGif('npc', 'cast', 1000); // NPC "cast" GIF
       triggerGif('player', 'suffer', 1000); // Player "suffer" GIF
       playSound('wrong');
-      playSound('grunt');
-      playSound('painhum');
+      playSound('grunt',10000);
+      playSound('painhum',10000);
       
       // NPC attacks, Player gets hit
       playAnimationSequence(
