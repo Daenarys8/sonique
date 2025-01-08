@@ -100,3 +100,46 @@
   color: white;
   z-index: 20; /* Ensure it sits above other elements */
 }
+
+.canvas-wrapper {
+  position: relative;
+  width: 50%; /* Each canvas takes half the screen */
+  height: 100%;
+  overflow: hidden;
+}
+
+.gif-overlay {
+  position: absolute;
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%);
+  z-index: 10; /* Ensure it's in front of the canvas */
+  width: 400px; /* Adjust as needed */
+  height: 700px; /* Adjust as needed */
+  pointer-events: none; /* Ensure it doesn't interfere with clicks */
+}
+
+.left-character .player-cast-gif,
+.right-character .npc-cast-gif {
+  animation: fadeInOut 1s ease-in-out;
+}
+
+.left-character .player-suffer-gif,
+.right-character .npc-suffer-gif {
+  animation: fadeInOut 1s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}

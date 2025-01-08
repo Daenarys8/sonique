@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Header } from './Header';
@@ -11,6 +11,7 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Environment } from '@react-three/drei'
 import { MODEL_PATHS, ANIMATION_DURATIONS } from '../constants/modelPaths';
 import { Character3D } from './Character3D'
+import { SoundManager } from './CategoryGrid';
 
 
 interface Answer {
@@ -45,6 +46,23 @@ interface QuizQuestion {
   difficulty: string;
 }
 
+const SOUND_EFFECTS = {
+  hover: '/sounds/hover-chime.mp3',
+  select: '/sounds/select-chime.wav',
+  success: '/sounds/success-chime.mp3',
+  attack: '/sounds/attack.mp3',
+  correct: '/sounds/correct.mp3',
+  wrong: '/sounds/wrong.mp3',
+  sonique: '/sounds/sonique.mp3',
+  npccry: '/sounds/npccry.mp3',
+  painhum: '/sounds/painhum.mp3',
+  grunt: '/sounds/grunt.wav'
+};
+
+// Update these paths to your actual GIF file locations
+const CAST_GIF = '/effects/cast.gif';
+const SUFFER_GIF = '/effects/suffer.gif';
+
 export function GuestGame() {
   const navigate = useNavigate();
   const { startGuestSession, endGuestSession } = useAuth();
@@ -68,6 +86,63 @@ export function GuestGame() {
   });
   
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+  const soundManagerRef = useRef<SoundManager | null>(null);
+  const [playerEffect, setPlayerEffect] = useState<string | null>(null); // For player's GIF
+  const [npcEffect, setNpcEffect] = useState<string | null>(null); // For NPC's GIF
+  const [playerGif, setPlayerGif] = useState<string | null>(null); // Either "cast" or "suffer"
+  const [npcGif, setNpcGif] = useState<string | null>(null); // Either "cast" or "suffer"
+
+
+  const triggerGif = useCallback(
+    (character: 'player' | 'npc', gifType: 'cast' | 'suffer', duration: number) => {
+      if (character === 'player') {
+        setPlayerGif(gifType);
+        setTimeout(() => setPlayerGif(null), duration); // Hide after duration
+      } else if (character === 'npc') {
+        setNpcGif(gifType);
+        setTimeout(() => setNpcGif(null), duration); // Hide after duration
+      }
+    },
+    []
+  );
+
+
+  useEffect(() => {
+          // Initialize sound manager with all sound effects
+          soundManagerRef.current = new SoundManager(SOUND_EFFECTS);
+      
+          return () => {
+            soundManagerRef.current = null;
+          };
+        }, []);
+    
+      const playSound = (soundType: keyof typeof SOUND_EFFECTS) => {
+          soundManagerRef.current?.play(soundType);
+      };
+
+  useEffect(() => {
+    // Load and play music when the game starts
+    if (!backgroundMusicRef.current) {
+      backgroundMusicRef.current = new Audio('/sounds/fighting-music.mp3'); // Adjust path as needed
+      backgroundMusicRef.current.loop = true;
+    }
+    backgroundMusicRef.current.play().catch(err => console.error('Music playback failed:', err));
+
+    return () => {
+      // Stop music when the component unmounts
+      backgroundMusicRef.current?.pause();
+      backgroundMusicRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (gameComplete) {
+      // Stop the music if the game completes
+      backgroundMusicRef.current?.pause();
+    }
+  }, [gameComplete]);
 
   useEffect(() => {
     // Initial question fetch when component mounts
@@ -172,6 +247,13 @@ export function GuestGame() {
     if (isCorrect) {
       setScore(prev => prev + 100);
       setHp(prev => Math.min(prev + 1, 5));
+
+      setPlayerEffect('/effects/cast.gif');
+      setNpcEffect('/effects/suffer.gif');
+      triggerGif('player', 'cast', 4000); // Player "cast" GIF
+      triggerGif('npc', 'suffer', 4000); // NPC "suffer" GIF
+      playSound('correct');
+      playSound('npccry');
       
       // Player attacks, NPC gets hit
       playAnimationSequence(
@@ -181,6 +263,15 @@ export function GuestGame() {
       );
     } else {
       setHp(prev => prev - 1);
+
+      setPlayerEffect('/effects/suffer.gif');
+      setNpcEffect('/effects/cast.gif');
+
+      triggerGif('npc', 'cast', 1000); // NPC "cast" GIF
+      triggerGif('player', 'suffer', 1000); // Player "suffer" GIF
+      playSound('wrong');
+      playSound('grunt');
+      playSound('painhum');
       
       // NPC attacks, Player gets hit
       playAnimationSequence(
@@ -200,12 +291,17 @@ export function GuestGame() {
         return;
       }
     }
+
+    setTimeout(() => {
+      setPlayerEffect(null);
+      setNpcEffect(null);
+    }, ANIMATION_DURATIONS.ATTACK);
   
     setSelectedAnswer(null);
     setShowResult(false);
     setCurrentQuestionIndex(prev => prev + 1);
     fetchQuestion();
-  }, [selectedAnswer, isAnimating, hp, playAnimationSequence, getCurrentQuestion, fetchQuestion]);
+  }, [selectedAnswer, isAnimating, hp, playAnimationSequence, getCurrentQuestion, fetchQuestion, triggerGif]);
 
   // Clean up animations when component unmounts
   useEffect(() => {
@@ -216,7 +312,7 @@ export function GuestGame() {
 
   // Update game complete check
   useEffect(() => {
-    if (currentQuestionIndex >= 5) {
+    if (currentQuestionIndex >= 5 && hp >= 3) {
       playAnimationSequence(
         2, // Player attack animation index
         4, // NPC defeat animation index
@@ -224,15 +320,20 @@ export function GuestGame() {
       );
       setGameComplete(true);
     }
-  }, [currentQuestionIndex, playAnimationSequence]);
+  }, [currentQuestionIndex, hp, playAnimationSequence]);
   startGuestSession;
 
   // Update the game complete check
   useEffect(() => {
     if (currentQuestionIndex >= 5 || hp <= 0) {
+      playAnimationSequence(
+        3, // Player defeat animation index
+        3, // NPC victory animation index
+        ANIMATION_DURATIONS.VICTORY
+      );
       setGameComplete(true);
     }
-  }, [currentQuestionIndex, hp]);
+  }, [currentQuestionIndex, hp, playAnimationSequence]);
   
 
   const handleSignUp = () => {
@@ -263,6 +364,7 @@ export function GuestGame() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           minHeight: '100vh',
+          position: 'relative', // Add this for layering
         }}
       >
         <Header
@@ -271,7 +373,74 @@ export function GuestGame() {
           onProfileClick={() => setShowProfile(true)}
           isGuest={true}
         />
-        <div className="guest-game-complete flex flex-col items-center justify-center min-h-[400px] text-center text-white">
+    
+        {/* Right Model */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            height: '100%',
+            width: '50%',
+            pointerEvents: 'none',
+            zIndex: 1, // Lower priority than buttons
+          }}
+        >
+          <Canvas camera={{ position: [5, 2, 5], fov: 50 }}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[-10, 10, 5]} intensity={10} />
+            <Character3D
+              modelPath={MODEL_PATHS.NPC.BASE.model}
+              animationPaths={MODEL_PATHS.NPC.BASE.animations}
+              position={[2, -2, 0]}
+              scale={0.02}
+              rotation={[0, -Math.PI / 0.25, 0]}
+              currentAnimation={npcState.currentAnimation}
+            />
+            <Environment preset="park" />
+          </Canvas>
+        </div>
+    
+        {/* Left Model */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: '50%',
+            pointerEvents: 'none',
+            zIndex: 1, // Lower priority than buttons
+          }}
+        >
+          <Canvas camera={{ position: [-5, 2, 5], fov: 50 }}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 5]} intensity={7} />
+            <Character3D
+              modelPath={MODEL_PATHS.PLAYER.BASE.model}
+              animationPaths={MODEL_PATHS.PLAYER.BASE.animations}
+              position={[-2, -2, 0]}
+              scale={0.02}
+              rotation={[0, Math.PI / 0.5, 0]}
+              currentAnimation={playerState.currentAnimation}
+            />
+            <Environment preset="park" />
+          </Canvas>
+        </div>
+    
+        {/* Buttons Section */}
+        <div
+          className="guest-game-complete flex flex-col items-center justify-center min-h-[400px] text-center text-white"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 10, // Ensure it appears above the models
+            pointerEvents: 'auto', // Enable interactions
+          }}
+        >
           <h2 className="text-3xl font-bold mb-4">
             {hp <= 0 ? 'Game Over!' : 'Level Complete!'}
           </h2>
@@ -281,18 +450,21 @@ export function GuestGame() {
           <div className="flex gap-4">
             <button
               onClick={handleSignUp}
+              onMouseEnter={() => playSound('hover')}
               className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
             >
               Sign Up
             </button>
             <button
               onClick={handleLogin}
+              onMouseEnter={() => playSound('hover')}
               className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
             >
               Login
             </button>
             <button
               onClick={handleReplay}
+              onMouseEnter={() => playSound('hover')}
               className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
               Replay
@@ -300,7 +472,7 @@ export function GuestGame() {
           </div>
         </div>
       </div>
-    );
+    );    
   }
 
   return (
@@ -321,31 +493,25 @@ export function GuestGame() {
         onProfileClick={() => setShowProfile(true)}
         isGuest={true}
       />
-      {/* Left Model */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100%',
-            width: '50%', // Left half of the screen
-            pointerEvents: 'none', // Prevents interfering with UI interactions
-          }}
-        >
-          <Canvas camera={{ position: [-5, 2, 5], fov: 50 }}>
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 5]} intensity={10} />
-            <Character3D
-              modelPath={MODEL_PATHS.PLAYER.BASE.model}
-              animationPaths={MODEL_PATHS.PLAYER.BASE.animations}
-              position={[-1.5, -2.08, 1]}
-              scale={0.02} // Adjust the size
-              rotation={[0, -Math.PI / 4, 0]} // Rotate slightly to face inward
-              currentAnimation={playerState.currentAnimation}
-            />
-            <Environment preset="park" />
-          </Canvas>
-        </div>
+      {/* Player GIF Effect */}
+      {playerEffect && (
+        <img
+          src={playerEffect}
+          alt="Player Effect"
+          className="absolute left-20 top-1/2 transform -translate-y-1/2"
+          style={{ width: '400px', height: '700px', pointerEvents: 'none' }}
+        />
+      )}
+
+      {/* NPC GIF Effect */}
+      {npcEffect && (
+        <img
+          src={npcEffect}
+          alt="NPC Effect"
+          className="absolute right-20 top-1/2 transform -translate-y-1/2"
+          style={{ width: '400px', height: '700px', pointerEvents: 'none' }}
+        />
+      )}
 
         {/* Right Model */}
         <div
@@ -371,6 +537,14 @@ export function GuestGame() {
             />
             <Environment preset="park" />
           </Canvas>
+          {/* Show NPC's GIF */}
+        {npcGif && (
+          <img
+            src={npcGif === 'cast' ? CAST_GIF : SUFFER_GIF}
+            alt={`${npcGif} GIF`}
+            className="gif-overlay"
+          />
+        )}
         </div>
 
         {/* Left Model */}
@@ -397,7 +571,15 @@ export function GuestGame() {
             />
             <Environment preset="park" />
           </Canvas>
-        </div>
+          {/* Show Player's GIF */}
+        {playerGif && (
+          <img
+            src={playerGif === 'cast' ? CAST_GIF : SUFFER_GIF}
+            alt={`${playerGif} GIF`}
+            className="gif-overlay"
+          />
+        )}
+        </div> 
       {/* Game Progress Container - Positioned below the Header */}
         <div 
           className="game-progress-container mt-0 flex justify-center"
@@ -468,6 +650,7 @@ export function GuestGame() {
                         <button
                           key={answerKey}
                           onClick={() => handleAnswerSelect(answerKey)}
+                          onMouseEnter={() => playSound('hover')}
                           className={`p-4 rounded-lg transition-all text-left font-medium text-lg flex items-center gap-4
                             ${selectedAnswer === answerKey
                               ? 'bg-blue-600 text-white shadow-lg'
@@ -490,6 +673,7 @@ export function GuestGame() {
                 {selectedAnswer && !showResult && (
                   <button
                     onClick={() => setShowResult(true)}
+                    onMouseEnter={() => playSound('attack')}
                     className="px-8 py-3 bg-green-500 hover:bg-green-600 rounded-lg text-white font-bold transition-colors"
                   >
                     Attack
@@ -498,6 +682,7 @@ export function GuestGame() {
                 {showResult && (
                   <button
                     onClick={handleNextQuestion}
+                    onMouseEnter={() => playSound('sonique')}
                     className="px-8 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-bold transition-colors"
                   >
                     {currentQuestionIndex >= 4 ? 'Finish' : 'Sonique'}
