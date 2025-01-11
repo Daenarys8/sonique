@@ -1,0 +1,52 @@
+/* Consolidated model styles */
+/* Model styles consolidated from model-container.css, model-interactions.css, and model-responsive.css */
+
+/* Common model container styles */
+.model-container {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  pointer-events: none;
+}
+
+.model-container.left {
+  left: 0;
+}
+
+.model-container.right {
+  right: 0;
+}
+
+/* Model effects */
+.effect-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.effect-overlay.left {
+  left: 0;
+}
+
+.effect-overlay.right {
+  right: 0;
+}
+
+/* Animation states */
+.model-animate {
+  transition: transform 0.3s ease;
+}
+
+.model-idle {
+  transform: translateY(0);
+}
+
+.model-attack {
+  transform: translateX(10%);
+}
+
+.model-hit {
+  transform: translateX(-10%);
+}

@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
-import { SoundManager } from './CategoryGrid';
+import { SoundManager } from '../utils/SoundManager';
 import '../styles/fonts.css';
+import '../styles/button-position-fixes.css';
+import '../styles/responsive-text.css';
+
+import { useAccessibility } from '../contexts/AccessibilityContext';
+import type { AccessibilityContextType, AccessibilityState } from '../types/accessibility';
 
 type LoadingPageProps = {
   onLoadComplete: () => void;
@@ -14,6 +19,7 @@ const SOUND_EFFECTS = {
 };
 
 export function LoadingPage({ onLoadComplete }: LoadingPageProps) {
+  const { reducedMotion } = useAccessibility();
   const loadingSteps = [
     { text: '', image: '/assets/background.gif' },
     { 
@@ -184,11 +190,11 @@ export function LoadingPage({ onLoadComplete }: LoadingPageProps) {
   };
 
   const renderTitle = () => (
-    <h1 className="text-6xl font-orbitron text-gray-800 mb-6 text-glow">
+    <h1 className="">
       <span className="futuristic-title-green text-glow">son</span>
       <span className="futuristic-title-orange text-glow">IQ</span>
       <span className="futuristic-title-green text-glow">ue</span>
-      <span className="futuristic-title-green text-glow"> worlds</span>
+      <span className="futuristic-title-green text-glow"> Worlds</span>
     </h1>
   );
 
@@ -219,47 +225,94 @@ export function LoadingPage({ onLoadComplete }: LoadingPageProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-black">
+    <div className="loading-container bg-black min-h-screen flex flex-col justify-center items-center relative">
+      <div className="absolute inset-0 bg-black/40" />
+      {/* Background Image Layer */}
       <div
         className="absolute inset-0 bg-cover bg-center transition-opacity duration-650"
         style={{
           backgroundImage: `url(${loadingSteps[currentStep].image})`,
           opacity: 1,
-          transition: 'background-image 1s ease' // Smooth transition for image change
+          transition: reducedMotion ? 'none' : 'background-image 1s ease'
         }}
+        role="presentation"
+        aria-hidden="true"
       />
+      
+      {/* Loading Spinner */}
       {currentStep === 0 && (
-        // Show spinner when GIF is playing
-        <div className="absolute flex justify-center items-center z-10">
-          <div className="spinner"></div> {/* This could be a CSS spinner */}
+        <div 
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10" 
+          aria-live="polite"
+        >
+          <div 
+            className="spinner"
+            role="status" 
+            aria-label="Loading..."
+          />
         </div>
       )}
-      <div className="relative z-10 text-center px-6 sm:px-12">
-        {renderTitle()}
-        <p className="futuristic-title-green text-glow text-lg text-white text-glow mb-8 font-orbitron leading-relaxed text-shadow-lg max-w-4xl mx-auto break-words">
+  
+      {/* Content Layer */}
+      <div className="relative z-10 text-center px-4 sm:px-6 md:px-8 w-full max-w-4xl mx-auto">
+        {/* Title Section */}
+        <div className="mb-8">
+          {renderTitle()}
+        </div>
+  
+        {/* Loading Text */}
+        <p 
+          className="loading-text futuristic-message futuristic-message-green text-glow text-white mb-8 break-words" 
+          aria-live="polite"
+        >
           {loadingSteps[currentStep].text}
         </p>
+  
+        {/* Button Container */}
         {(currentStep === 1 || currentStep === 2 || currentStep === 3) && (
+          <div className="loading-page-button-container -mt-12">
           <button
             onClick={currentStep === 3 ? handleStartGame : handleNextStep}
             onMouseEnter={() => playSound('hover')}
             className={`
-              start-button px-12 py-6 text-3xl font-orbitron text-white 
-              bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg
-              shadow-[0_0_20px_rgba(79,70,229,0.5)] hover:shadow-[0_0_40px_rgba(79,70,229,0.6)]
-              border border-indigo-400/50 hover:border-indigo-300
-              transition-all duration-300 ease-in-out transform hover:scale-105
+              loading-page-button
+              start-button
+              px-4 sm:px-6 md:px-8 lg:px-10  /* Responsive padding */
+              py-2 sm:py-4 md:py-6  /* Responsive padding */
+              text-sm sm:text-base md:text-lg lg:text-xl  /* Responsive font size */
+              font-orbitron text-white
+              bg-gradient-to-r from-indigo-600 to-purple-600
+              rounded-lg
+              shadow-[0_0_20px_rgba(79,70,229,0.5)]
+              hover:shadow-[0_0_40px_rgba(79,70,229,0.6)]
+              border border-indigo-400/50
+              hover:border-indigo-300
+              transition-all duration-300 ease-in-out
+              transform hover:scale-105
               relative overflow-hidden
-              disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-              focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+              disabled:opacity-50
+              disabled:cursor-not-allowed
+              disabled:transform-none
+              focus:outline-none
+              focus:ring-2
+              focus:ring-purple-500
+              focus:ring-offset-2
+              focus-visible:ring-offset-black
+              active:transform active:scale-95
             `}
+            aria-label={currentStep === 3 ? 'Start Game' : 'Next Step'}
           >
-            {currentStep === 3 ? 'Start Game' : 'Next'}
+            <span className="relative z-10">
+              {currentStep === 3 ? 'Start Game' : 'Next'}
+            </span>
           </button>
+        </div>        
         )}
+  
+        {/* Sound Toggle Button */}
         <button
           onClick={toggleSound}
-          className="absolute top-4 right-4 text-white hover:text-gray-300"
+          className="absolute top-4 right-4 text-white hover:text-gray-300 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black transition-colors duration-200"
           aria-label={isSoundEnabled ? 'Disable sound' : 'Enable sound'}
         >
           {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}

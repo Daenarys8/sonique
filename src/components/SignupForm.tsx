@@ -30,11 +30,29 @@ export function SignupForm() {
   
     if (!username) {
       setError('Username is required');
+      setIsLoading(false);
       return;
     }
     
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    const { isValid, errors } = validatePassword(password);
+    if (!isValid) {
+      setError(errors.join('\n'));
+      setIsLoading(false);
+      return;
+    }
+
+    // Check rate limiting
+    const checkRateLimit = useRateLimit();
+    if (!checkRateLimit()) {
+      setError('Too many attempts. Please try again later.');
+      setIsLoading(false);
       return;
     }
     
@@ -73,7 +91,7 @@ export function SignupForm() {
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative">
+    <div className="min-h-screen flex items-center justify-center relative form-container">
       {/* Background Image */}
       <div className="fixed inset-0 z-0">
         <img

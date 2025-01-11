@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useResponsive } from '../hooks/useResponsive';
 import type { Category } from '../types/game';
 import './CategoryGrid.css';
 
@@ -41,7 +42,10 @@ type CategoryGridProps = {
 };
 
 // Enhanced SoundManager to handle multiple sound types
-export class SoundManager {
+// Import the type definition
+import type { SoundManager as SoundManagerType } from '../types/sound';
+
+export class SoundManager implements SoundManagerType {
   private soundPools: Map<string, HTMLAudioElement[]>;
   private currentIndices: Map<string, number>;
   private activeTimeouts: Map<string, number[]>;
@@ -178,10 +182,20 @@ export class SoundManager {
 }
 
 export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGridProps) {
+  const responsive = useResponsive();
   const soundManagerRef = useRef<SoundManager | null>(null);
+  const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
   const [soundEnabled, setSoundEnabled] = useState(() => {
     return localStorage.getItem('soundEnabled') !== 'false';
   });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     // Initialize sound manager with all sound effects
@@ -220,7 +234,7 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
     });
   };
   return (
-    <div className="category-grid-container">
+    <div className={`category-grid-container responsive-container ${isLandscape ? 'landscape' : ''}`}>
       {/* Sound toggle button */}
       <button 
         onClick={toggleSound}
@@ -234,7 +248,7 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
             Sonique Worlds
         </h2>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-6 p-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 p-2 sm:p-4 md:p-6">
         {categories.map((category) => (
           <button
             key={category.id}
@@ -245,7 +259,7 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
               backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${category.backgroundImage})`,
             }}
           >
-            <div className="card-content">
+            <div className="card-content" role="button" aria-label={`Select ${category.name} category`}>
               {/* Glowing border effect */}
               <div className="glow-effect"></div>
               

@@ -17,35 +17,35 @@ export function GameProgress({ profile, hp }: GameProgressProps) {
   const hpPercentage = (hp / 5) * 100; // Assuming max HP is 5
 
   return (
-    <div className="game-progress-container relative overflow-hidden rounded-xl shadow-2xl">
+    <div className="game-progress-container">
       {/* Background with overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 backdrop-blur-none" />
       
       {/* Content */}
-      <div className="relative z-10 p-6 space-y-6">
-        <div className="flex items-center gap-4">
+      <div className="relative z-10 p-4 space-y-0"> {/* Reduced padding */}
+        <div className="flex items-center gap-1"> {/* Reduced gap */}
           <div className="level-badge">
-            <Star className="w-6 h-6 text-yellow-400 animate-pulse" />
+            <Star className="w-5 h-5 text-yellow-400 animate-pulse" /> {/* Smaller icon size */}
           </div>
-          <h2 className="text-2xl font-gaming text-white tracking-wider glow-text">
+          <h2 className="level-title font-gaming text-white glow-text">
             Level {currentLevel}
           </h2>
         </div>
-
+  
         {/* Progress section */}
-        <div className="space-y-6">
+        <div className="space-y-0"> {/* Reduced space between sections */}
           {/* XP Progress */}
           <div className="progress-section">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-yellow-400 font-gaming text-sm">
+              <span className="text-yellow-400 font-gaming glow-text">
                 LEVEL {currentLevel}
               </span>
-              <span className="text-blue-400 font-gaming text-sm">
+              <span className="text-blue-400 font-gaming glow-text">
                 LEVEL {currentLevel + 1}
               </span>
             </div>
             
-            {/* Custom XP progress bar */}
+            {/* XP Progress Bar */}
             <div className="progress-bar-container">
               <div className="progress-bar-background" />
               <div 
@@ -63,19 +63,19 @@ export function GameProgress({ profile, hp }: GameProgressProps) {
             </div>
             
             <div className="text-center mt-1">
-              <span className="text-cyan-400 font-gaming text-sm glow-text">
+              <span className="text-cyan-400 font-gaming glow-text">
                 {experienceToNextLevel} XP to next level
               </span>
             </div>
           </div>
-
+  
           {/* HP Progress */}
           <div className="progress-section">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-red-400 font-gaming text-sm">HP</span>
-              <span className="text-green-400 font-gaming text-sm">Max HP</span>
+              <span className="text-red-400 font-gaming glow-text">HP</span>
+              <span className="text-green-400 font-gaming glow-text">Max HP</span>
             </div>
-
+  
             {/* HP Progress Bar */}
             <div className="progress-bar-container">
               <div className="progress-bar-background" />
@@ -84,25 +84,25 @@ export function GameProgress({ profile, hp }: GameProgressProps) {
                 style={{ width: `${hpPercentage}%` }}
               />
             </div>
-
+  
             <div className="text-center mt-1">
-              <span className="text-white font-gaming text-sm glow-text">
+              <span className="text-white font-gaming glow-text">
                 {hp} / 5 HP remaining
               </span>
             </div>
           </div>
-
+  
           {/* Stats */}
           <div className="stats-container">
             <div className="stat-item">
-              <Gamepad2 className="w-5 h-5 text-green-400" />
-              <span className="font-gaming text-green-400">
+              <Gamepad2 className="stat-icon" /> {/* Small icon */}
+              <span className="font-gaming text-green-400 glow-text">
                 {profile.stats.totalGames} Games
               </span>
             </div>
             <div className="stat-item">
-              <Trophy className="w-5 h-5 text-yellow-400" />
-              <span className="font-gaming text-yellow-400">
+              <Trophy className="stat-icon" /> {/* Small icon */}
+              <span className="font-gaming text-yellow-400 glow-text">
                 {profile.stats.totalCoins} Coins
               </span>
             </div>
@@ -110,5 +110,5 @@ export function GameProgress({ profile, hp }: GameProgressProps) {
         </div>
       </div>
     </div>
-  );
+  );      
 }

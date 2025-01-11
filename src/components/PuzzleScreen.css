@@ -1,0 +1,80 @@
+/* PuzzleScreen responsive styles */
+.puzzle-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  padding: var(--container-padding, 1rem);
+}
+
+.puzzle-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.puzzle-header {
+  font-size: calc(1.5rem * var(--scale-ratio));
+  margin-bottom: calc(1rem * var(--scale-ratio));
+}
+
+.puzzle-description {
+  font-size: calc(1rem * var(--scale-ratio));
+  line-height: 1.5;
+  margin-bottom: calc(1rem * var(--scale-ratio));
+}
+
+.puzzle-controls {
+  display: flex;
+  gap: calc(0.5rem * var(--scale-ratio));
+  margin-top: auto;
+}
+
+/* Landscape mode optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .puzzle-container {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .puzzle-content {
+    flex: 1;
+    min-width: 50%;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .puzzle-controls {
+    width: 30%;
+    flex-direction: column;
+    padding: calc(0.5rem * var(--scale-ratio));
+  }
+}
+
+/* Mobile portrait optimizations */
+@media (max-width: 480px) and (orientation: portrait) {
+  .puzzle-container {
+    padding: calc(var(--container-padding, 1rem) * 0.75);
+  }
+
+  .puzzle-header {
+    font-size: calc(1.25rem * var(--scale-ratio));
+  }
+
+  .puzzle-description {
+    font-size: calc(0.9rem * var(--scale-ratio));
+  }
+
+  .puzzle-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 481px) and (max-width: 768px) {
+  .puzzle-container {
+    padding: calc(var(--container-padding, 1rem) * 0.85);
+  }
+}

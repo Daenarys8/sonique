@@ -1,0 +1,94 @@
+/* Battle scene responsive styles */
+.battle-scene-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.battle-model-container {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  pointer-events: none;
+}
+
+.battle-model-container.left {
+  left: 0;
+}
+
+.battle-model-container.right {
+  right: 0;
+}
+
+@media (max-width: 768px) {
+  .battle-scene-wrapper {
+    height: 60vh;
+  }
+
+  .effect-overlay {
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .battle-scene-wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .battle-model-container {
+    position: relative;
+    width: 50%;
+    height: 100%;
+  }
+
+  .effect-overlay {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 480px) {
+  .battle-scene-wrapper {
+    height: 50vh;
+  }
+
+  .effect-overlay {
+    transform: scale(0.7);
+  }
+}
+
+/* Battle scene animations */
+@media (prefers-reduced-motion: reduce) {
+  .battle-animation {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Loading and error states */
+.model-loading,
+.model-error,
+.model-fallback {
+  padding: calc(1rem * var(--scale-ratio));
+  font-size: calc(1rem * var(--scale-ratio));
+  text-align: center;
+}
+
+.model-loading-spinner {
+  width: calc(32px * var(--scale-ratio));
+  height: calc(32px * var(--scale-ratio));
+}
+
+/* Battle UI elements */
+.battle-ui-element {
+  font-size: calc(1rem * var(--scale-ratio));
+  padding: calc(0.5rem * var(--scale-ratio));
+}
+
+.battle-button {
+  padding: calc(0.5rem * var(--scale-ratio)) calc(1rem * var(--scale-ratio));
+  font-size: calc(1rem * var(--scale-ratio));
+  border-radius: calc(0.25rem * var(--scale-ratio));
+}

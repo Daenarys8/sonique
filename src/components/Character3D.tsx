@@ -1,6 +1,6 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { useLoader, useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, Html } from '@react-three/drei';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -14,6 +14,8 @@ interface Character3DProps {
   rotation: [number, number, number];
   currentAnimation?: number;
 }
+
+import { useResponsive } from '../hooks/useResponsive';
 
 export function Character3D({ 
   modelPath, 
@@ -76,12 +78,120 @@ export function Character3D({
     mixer.current?.update(delta);
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [isLowPerformance, setIsLowPerformance] = useState(false);
+  const responsive = useResponsive();
+  
+  // Check device capabilities
+  const [supportedScreen, setSupportedScreen] = useState(true);
+
+  useEffect(() => {
+    const checkDeviceCapabilities = () => {
+      // Check for WebGL support
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      
+      // Check screen size and WebGL support
+      setSupportedScreen(
+        window.innerWidth >= 480 && 
+        window.innerHeight >= 320 && 
+        !!gl
+      );
+    };
+    
+    checkDeviceCapabilities();
+    window.addEventListener('resize', checkDeviceCapabilities);
+    
+    return () => window.removeEventListener('resize', checkDeviceCapabilities);
+  }, []);
+
+  // Check for low performance devices
+  useEffect(() => {
+    const checkPerformance = () => {
+      if (typeof window !== 'undefined' && 'deviceMemory' in navigator) {
+        // @ts-ignore
+        setIsLowPerformance(navigator.deviceMemory < 4);
+      }
+    };
+    checkPerformance();
+  }, []);
+
+  useEffect(() => {
+    if (!model.current) {
+      setLoadingProgress(0);
+      return;
+    }
+
+    // Simulate loading progress
+    const interval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsLoading(false);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [model.current]);
+
+  if (error) {
+    return (
+      <Html>
+        <div className="model-error" role="alert">
+          <p>Unable to load 3D model</p>
+          <p>{error}</p>
+        </div>
+      </Html>
+    );
+  }
+
+  if (!supportedScreen) {
+    return (
+      <Html>
+        <div className="model-fallback" role="alert">
+          <p>3D view not supported on this device</p>
+          <p>Please use a device with a larger screen or better graphics capabilities</p>
+        </div>
+      </Html>
+    );
+  }
+
   return (
-    <primitive 
-      object={'scene' in baseModel ? baseModel.scene : baseModel}
-      position={position}
-      scale={scale}
-      rotation={rotation}
-    />
+    <>
+      {isLoading && (
+        <Html>
+          <div className="model-loading" role="status" aria-live="polite">
+            <div className="model-loading-content">
+              <div className="model-loading-spinner" aria-hidden="true" />
+              <p>Loading 3D model... {Math.round(loadingProgress)}%</p>
+            </div>
+          </div>
+        </Html>
+      )}
+      <primitive 
+        className="character-model"
+        object={'scene' in baseModel ? baseModel.scene : baseModel}
+        position={position}
+        scale={
+    isLowPerformance 
+      ? scale * 0.8 
+      : scale * (responsive.isMobile 
+        ? (responsive.isLandscape ? 0.9 : 0.8) 
+        : responsive.isTablet 
+          ? 0.95 
+          : 1
+      )
+}
+        rotation={rotation}
+        onError={(error: Error) => setError(error.message)}
+        visible={!isLoading}
+        frustumCulled={true}
+      />
+    </>
   );
 }

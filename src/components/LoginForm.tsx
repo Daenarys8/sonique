@@ -71,7 +71,7 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
     };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center form-container">
       <div className="bg-opacity-80 bg-black container max-w-md w-full p-6 rounded-lg shadow-lg fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-indigo-500/30">
         <h2 className="text-2xl font-bold text-white mb-6 font-orbitron">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -8,6 +8,9 @@ import { GameProgress } from './components/GameProgress';
 import { useGameState } from './hooks/useGameState';
 import type { Category } from './types/game';
 import { AuthenticationScreen } from './components/AuthenticationScreen';
+import { GameProvider } from './contexts/GameContext';
+import { useGame } from './contexts/GameContext';
+import { SkipLink } from './components/SkipLink';
 import { PuzzleScreen } from './components/PuzzleScreen';
 import { LoadingPage } from './components/LoadingPage';
 import { Settings } from './components/Settings';
@@ -18,31 +21,24 @@ import { Profile } from './components/Profile';
 import GuestGame from './components/GuestGame';
 import { PublicRoute } from './components/PublicRoute';
 import { PrivateRoute } from './components/PrivateRoute';
+import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
+import  ErrorBoundary  from './components/ErrorBoundary';
 import './index.css';
 
-const SoundContext = createContext<{ isSoundEnabled: boolean }>({ isSoundEnabled: true });
+// Remove unused SoundContext
 
 function GameLayout({ children }: { children: (props: { isSoundEnabled: boolean, toggleSound: () => void }) => React.ReactNode }) {
-  const [showSettings, setShowSettings] = useState(false);
-  const [isSoundEnabled, setIsSoundEnabled] = useState(
-    localStorage.getItem('soundEnabled') !== 'false'
-  );
   const { userProfile } = useGameState();
-  const [showProfile, setShowProfile] = useState(false);
-
-  const handleSettingsClick = () => {
-    setShowSettings(true);
-  };
-
-  const toggleSound = useCallback(() => {
-    const newSoundEnabled = !isSoundEnabled;
-    setIsSoundEnabled(newSoundEnabled);
-    localStorage.setItem('soundEnabled', String(newSoundEnabled));
-  }, [isSoundEnabled]);
-
-  const handleProfileClick = () => {
-    setShowProfile(true);
-  };
+  const {
+    isSoundEnabled,
+    showSettings,
+    showProfile,
+    toggleSound,
+    handleSettingsClick,
+    handleProfileClick,
+    handleSettingsClose,
+    handleProfileClose
+  } = useGame();
 
   return (
     <>
@@ -56,60 +52,43 @@ function GameLayout({ children }: { children: (props: { isSoundEnabled: boolean,
         <Settings
           isSoundEnabled={isSoundEnabled}
           onToggleSound={toggleSound}
-          onClose={() => setShowSettings(false)}
+          onClose={handleSettingsClose}
         />
       )}
       {showProfile && (
-        <Profile onClose={() => setShowProfile(false)} />
+        <Profile onClose={handleProfileClose} />
       )}
     </>
   );
 }
 
 function GameContent() {
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const { userProfile, updateCoins, completeCategory } = useGameState();
-  const { isSoundEnabled } = useContext(SoundContext); // Add this context for sound settings
+  const { 
+    selectedCategory,
+    isSoundEnabled,
+    handleCategorySelect,
+    handleCategoryClear
+  } = useGame();
   const [hp, setHp] = useState(4);
-  const handleCategorySelect = useCallback((
-    category: Omit<Category, 'description' | 'difficulty'> & { 
-      description?: string; 
-      difficulty?: 'easy' | 'medium' | 'hard' 
-    }
-  ) => {
-    const fullCategory: Category = {
-      ...category,
-      description: category.description || '',
-      difficulty: category.difficulty || 'medium'
-    };
-    setSelectedCategory(fullCategory);
-  }, []);
 
   const handlePuzzleComplete = useCallback((coinsEarned: number) => {
     if (selectedCategory && 'id' in selectedCategory && 'name' in selectedCategory && 'icon' in selectedCategory) {
-      updateCoins(coinsEarned); // Use actual coins earned instead of fixed 10
-      const category: Category = {
-        id: selectedCategory.id,
-        name: selectedCategory.name,
-        progress: selectedCategory.progress || 0,
-        totalPuzzles: selectedCategory.totalPuzzles || 0,
-        description: selectedCategory.description,
-        difficulty: selectedCategory.difficulty || 'medium'
-      };
-      completeCategory(category);
+      updateCoins(coinsEarned);
+      completeCategory(selectedCategory);
+      handleCategoryClear();
     }
-    setSelectedCategory(null);
-  }, [selectedCategory, updateCoins, completeCategory]);
+  }, [selectedCategory, updateCoins, completeCategory, handleCategoryClear]);
 
   return selectedCategory ? (
     <PuzzleScreen
       categoryId={selectedCategory?.id}
       onComplete={handlePuzzleComplete}
-      onBack={() => setSelectedCategory(null)}
+      onBack={handleCategoryClear}
       isSoundEnabled={isSoundEnabled}
     />
   ) : (
-    <main className="max-w-7xl mx-auto py-8 px-4 relative z-10">
+    <main id="main-content" className="max-w-7xl mx-auto py-8 px-4 relative z-10" role="main">
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
           <GameProgress profile={userProfile} hp={hp} />
@@ -122,6 +101,34 @@ function GameContent() {
     </main>
   );
 }
+
+const BackgroundContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { reducedMotion, highContrast } = useAccessibility();
+
+  return (
+    <div
+      style={{
+        backgroundImage: highContrast ? 'none' : "url('/assets/game1.jpg')",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        minHeight: "100vh",
+        transition: reducedMotion ? 'none' : 'background-image 0.3s ease',
+        backgroundColor: highContrast ? '#000' : 'transparent'
+      }}
+      className={highContrast ? 'high-contrast' : ''}
+    >
+      {children}
+    </div>
+  );
+};
+
+const SignupPage = React.lazy(() => import('./pages/SignupPage'));
+const ConfirmSignupPage = React.lazy(() => import('./pages/ConfirmSignupPage'));
+const AuthenticationPage = React.lazy(() => import('./pages/AuthenticationPage'));
+const GuestGamePage = React.lazy(() => import('./pages/GuestGamePage'));
+const StartGamePage = React.lazy(() => import('./pages/StartGamePage'));
+const GameMainPage = React.lazy(() => import('./pages/GameMainPage'));
 
 function AppRoutes() {
   const { loading } = useAuth();
@@ -138,86 +145,88 @@ function AppRoutes() {
 
   // Show a simple loading indicator during auth state changes
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="loading-spinner" role="status">Loading...</div>;
   }
 
   return (
     <div className="min-h-screen relative">
-      <Routes>
-        {/* Public Routes */}
-        <Route 
-          path="/signup" 
-          element={
-            <PublicRoute>
-              <SignupForm />
-            </PublicRoute>
-          } 
-        />
-        <Route 
-          path="/confirm-signup" 
-          element={
-            <PublicRoute>
-              <ConfirmSignup />
-            </PublicRoute>
-          } 
-        />
-        <Route 
-          path="/login" 
-          element={
-            <PublicRoute>
-              <AuthenticationScreen />
-            </PublicRoute>
-          } 
-        />
-        <Route 
-          path="/guest" 
-          element={
-            <PublicRoute>
-              <GuestGame />
-            </PublicRoute>
-          } 
-        />
-        <Route 
-          path="/" 
-          element={
-            <PublicRoute>
-              <StartPage />
-            </PublicRoute>
-          } 
-        />
+      <SkipLink targetId="main-content" />
+      <React.Suspense fallback={<div className="loading-spinner" role="status" aria-live="polite">Loading...</div>}>
+        <Routes>
+          {/* Public Routes */}
+          <Route 
+            path="/signup" 
+            element={
+              <PublicRoute>
+                <SignupPage />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/confirm-signup" 
+            element={
+              <PublicRoute>
+                <ConfirmSignupPage />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/login" 
+            element={
+              <PublicRoute>
+                <AuthenticationPage />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/guest" 
+            element={
+              <PublicRoute>
+                <GuestGamePage />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/" 
+            element={
+              <PublicRoute>
+                <StartGamePage />
+              </PublicRoute>
+            } 
+          />
 
-        {/* Protected Routes */}
-        <Route 
-          path="/game" 
-          element={
-            <PrivateRoute>
-              <GameLayout>
-                {() => <GameContent />}
-              </GameLayout>
-            </PrivateRoute>
-          } 
-        />
+          {/* Protected Routes */}
+          <Route 
+            path="/game" 
+            element={
+              <PrivateRoute>
+                <GameMainPage />
+              </PrivateRoute>
+            } 
+          />
         {/* ... other routes ... */}
       </Routes>
+      </React.Suspense>
     </div>
   );
 }
 
 function App() {
   return (
-    <div
-    style={{
-      backgroundImage: "url('/assets/game1.jpg')",
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: "center",
-      minHeight: "100vh",
-    }}
-  >
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
-  </div>
+    <ErrorBoundary>
+      <AccessibilityProvider>
+        <BackgroundContainer>
+          <AuthProvider>
+            <GameProvider>
+              <div lang="en">
+                <a href="#main-content" className="sr-only focus:not-sr-only">Skip to main content</a>
+                <AppRoutes />
+              </div>
+            </GameProvider>
+          </AuthProvider>
+        </BackgroundContainer>
+      </AccessibilityProvider>
+    </ErrorBoundary>
   );
 }
 

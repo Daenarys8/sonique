@@ -19,6 +19,8 @@
   .question-card {
     position: relative;
     animation: fadeIn 0.5s ease-in-out;
+    margin: clamp(1rem, 2%, 2rem) auto; 
+    padding: clamp(0.5rem, 1%, 1.5rem); 
   }
   
   @keyframes fadeIn {
@@ -32,12 +34,6 @@
     }
   }
   
-  .option-label {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.25rem;
-  }
-  
   button {
     transition: transform 0.2s ease-in-out;
   }
@@ -47,17 +43,17 @@
   }
   
   .question-container {
-    width: 90%;
-    max-width: 800px;
+    width: clamp(70%, 90%, 95%); /* Responsive width */
+    max-width: clamp(600px, 80vw, 800px); /* Dynamic maximum width */
     position: relative;
-    padding: 20px;
+    padding: clamp(10px, 2vw, 20px); /* Responsive padding */
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     animation: fadeIn 0.8s ease-in-out;
   }
   
   .question-container-bg {
-    border-radius: 12px;
+    border-radius: clamp(8px, 4vw, 12px); /* Responsive border radius */
     filter: blur(5px) brightness(0.7);
   }
   
@@ -76,47 +72,25 @@
     z-index: 20;
   }
   
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
   /* Custom Category and Difficulty Styles */
-.category-difficulty {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(75, 0, 130, 0.7); /* Indigo with opacity */
-  padding: 8px 16px;
-  border-radius: 9999px; /* Fully rounded */
-  font-size: 0.875rem; /* Smaller text */
-  text-transform: uppercase; /* Uppercase text */
-  color: white;
-  z-index: 20; /* Ensure it sits above other elements */
-}
+  .category-difficulty {
+    position: absolute;
+    top: clamp(5px, 1vh, 10px); /* Responsive top positioning */
+    right: clamp(5px, 1vh, 10px); /* Responsive right positioning */
+    background-color: rgba(75, 0, 130, 0.7); /* Indigo with opacity */
+    padding: clamp(4px, 1vw, 8px) clamp(8px, 2vw, 16px); /* Responsive padding */
+    border-radius: 9999px; /* Fully rounded */
+    font-size: clamp(0.75rem, 1vw, 0.875rem); /* Responsive font size */
+    text-transform: uppercase; /* Uppercase text */
+    color: white;
+    z-index: 20; /* Ensure it sits above other elements */
+  }
 
 .canvas-wrapper {
   position: relative;
   width: 50%; /* Each canvas takes half the screen */
   height: 100%;
   overflow: hidden;
-}
-
-.gif-overlay {
-  position: absolute;
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%);
-  z-index: 10; /* Ensure it's in front of the canvas */
-  width: 400px; /* Adjust as needed */
-  height: 700px; /* Adjust as needed */
-  pointer-events: none; /* Ensure it doesn't interfere with clicks */
 }
 
 .left-character .player-cast-gif,
@@ -141,5 +115,308 @@
   100% {
     opacity: 0;
     transform: scale(0.8);
+  }
+}
+
+:root {
+  --header-bg: rgba(0, 0, 0, 0.7);
+  --border-color: rgba(255, 255, 255, 0.2);
+  --category-bg: rgba(75, 0, 130, 0.7);
+}
+
+
+.guest-game-header {
+  width: 100%;
+  background: var(--header-bg);
+  padding: 0.5rem;
+}
+
+.guest-game-content {
+  margin-top: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.question-card {
+  position: relative;
+  animation: fadeIn 0.5s ease-in-out;
+  width: 100%;
+  max-width: 95%;
+}
+
+.question-container {
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+  padding: clamp(1rem, 2vw, 2rem); /* Clamped padding */
+  border: 2px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.8s ease-in-out;
+  font-size: clamp(0.5rem, 1vw, 0.8rem); /* Clamped font size */
+}
+
+.option-label {
+  width: clamp(1.5rem, 3vw, 2rem); /* Clamped width */
+  height: clamp(1.5rem, 3vw, 2rem); /* Clamped height */
+  font-size: clamp(0.3rem, 0.5%, 0.5rem); /* Clamped font size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-difficulty {
+  position: absolute;
+  top: clamp(4px, 1vw, 6px); /* Clamped top position */
+  right: clamp(4px, 1vw, 6px); /* Clamped right position */
+  background-color: var(--category-bg);
+  padding: clamp(5px, 1vw, 8px) clamp(10px, 2vw, 12px); /* Clamped padding */
+  border-radius: 999px;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem); /* Clamped font size */
+  text-transform: uppercase;
+  color: white;
+  z-index: 20;
+}
+.gif-overlay {
+  position: absolute;
+  top: clamp(45%, 50%, 55%); /* Clamped top position */
+  left: clamp(45%, 50%, 55%); /* Clamped left position */
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: clamp(150px, 20vw, 200px); /* Responsive width */
+  height: clamp(250px, 35vh, 350px); /* Responsive height */
+  pointer-events: none;
+}
+
+/* Landscape mode */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .guest-game-wrapper {
+    padding: 0.5rem;
+  }
+
+  .guest-game-content {
+    margin-top: 0rem;
+  }
+
+  .canvas-wrapper {
+    height: 200px;
+  }
+
+  .gif-overlay {
+    width: 114px;
+    height: 200px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .question-card,
+  .question-container,
+  .left-character,
+  .right-character {
+    animation: none;
+  }
+}
+
+/* Button styles */
+button {
+  transition: transform 0.2s ease-in-out, box-shadow 0.3s ease;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+button:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
+.controls {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  width: auto;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Add to your CSS */
+@media screen and (orientation: landscape) {
+  /* Fix header positioning */
+  .header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  
+    /* Add responsive height */
+    height: clamp(40px, 5vh, 60px);
+  
+    /* Add padding for spacing within the header */
+    padding: clamp(4px, 1vw, 8px);
+  
+    /* Optional: Font size for header text (applies if there's text in the container) */
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+  }
+
+  /* Adjust main content layout */
+  .guest-game-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: var(--header-height);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Adjust model containers */
+  .model-container {
+    position: relative;
+    width: clamp(25vw, 30vw, 35vw) !important; /* Dynamic width */
+    height: calc(100vh - var(--header-height)) !important; /* Height stays adaptive */
+  }
+
+  /* Center question container */
+  .question-container {
+    width: clamp(55vw, 60vw, 75vw); /* Responsive width */
+    margin: clamp(0.5rem, 1vh, 1rem) auto 0;
+    max-height: calc(80vh - var(--header-height));
+    overflow-y: auto;
+    padding: clamp(1rem, 2vw, 2.5rem); /* Add responsive padding */
+    border: 2px solid var(--border-color);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.8s ease-in-out;
+    font-size: clamp(0.8rem, 1vw, 1rem); /* Clamped font size */
+    top: clamp(calc(var(--header-height) - 150px), calc(var(--header-height) - 100px), calc(var(--header-height) - 50px)); /* Clamped top position */
+}
+
+  /* Adjust game progress container */
+  .game-progress-container-guest {
+    position: relative;
+    top: calc(var(--header-height) + 45px);
+    transform: translateX(-50%);
+    width: clamp(30vw, 35vw, 40vw); /* Adjust width for different screen sizes */
+    transform: scale(clamp(0.2, 0.6, 0.9));
+    min-height: clamp(170px, 100%, 200px);
+    overflow-y: auto; 
+  }
+
+  .category-difficulty {
+    position: absolute;
+    top: clamp(3px, 1vw, 5px); /* Clamped top position */
+    right: clamp(4px, 1vw, 6px); /* Clamped right position */
+    background-color: var(--category-bg);
+    padding: clamp(2px, 1vw, 4px) clamp(5px, 2vw, 6px); /* Clamped padding */
+    border-radius: 9999px;
+    font-size: clamp(0.3rem, 1vw, 0.5rem); 
+    text-transform: uppercase;
+    color: white;
+    z-index: 20;
+  }
+
+  .option-label {
+    width: clamp(1rem, 2vw, 1.5rem); /* Clamped width */
+    height: clamp(1rem, 2vw, 1.5rem); /* Clamped height */
+    font-size: clamp(0.2rem, 0.5%, 0.5rem); /* Clamped font size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+
+.rotate-device-icon {
+  animation: rotate 1.5s ease infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-90deg); }
+  75% { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Disable animation if user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .rotate-device-icon {
+    animation: none;
+  }
+}
+
+/* Improved visibility for the rotation message */
+#warning-message h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+#warning-message p {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* High contrast support */
+@media (prefers-contrast: more) {
+  #warning-message {
+    background: black;
+    border: 2px solid white;
+  }
+}
+
+/* force-landscape.css */
+/* Lock screen to landscape and show rotation message in portrait */
+.guest-game-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+#warning-message {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg-dark, #000);
+  color: white;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Hide main content in portrait, show rotation message */
+@media screen and (orientation: portrait) {
+  #game-wrapper {
+    display: none;
+  }
+  
+  #warning-message {
+    display: flex;
+  }
+}
+
+/* Show content only in landscape */
+@media screen and (orientation: landscape) {
+  #warning-message {
+    display: none;
+  }
+  
+  #game-wrapper {
+    display: block;
   }
 }

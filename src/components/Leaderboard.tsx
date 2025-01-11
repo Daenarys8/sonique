@@ -24,7 +24,7 @@ const getRankIcon = (rank: number) => {
 
 export function Leaderboard() {
   return (
-    <div className="leaderboard-container relative overflow-hidden rounded-xl shadow-2xl w-[500px]">
+    <div className="leaderboard-container relative overflow-hidden rounded-xl shadow-2xl w-[500px] responsive-container">
       {/* Background with overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 backdrop-blur-sm" />
 
@@ -32,7 +32,7 @@ export function Leaderboard() {
       <div className="relative z-10 p-6 pb-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="trophy-icon-wrapper">
-            <Trophy className="w-8 h-8 text-yellow-400" />
+            <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
           </div>
           <h2 className="text-2xl font-bold text-white tracking-wider font-gaming">
             Leaderboard
@@ -41,7 +41,7 @@ export function Leaderboard() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="relative z-10 px-6 pb-6 overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+      <div className="relative z-10 p-4 sm:px-6 pb-4 sm:pb-6 overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
         {/* Leaderboard entries */}
         <div className="space-y-3">
           {mockLeaderboard.map((entry) => (

@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { Header } from './Header';
 import { Settings } from './Settings';
 import { Profile } from './Profile';
-import './GuestGame.css';
 import { GameProgress } from './GameProgress';
 import { useGameState } from '../hooks/useGameState';
 import { Canvas } from '@react-three/fiber'
@@ -12,6 +11,14 @@ import { OrbitControls, Environment } from '@react-three/drei'
 import { MODEL_PATHS, ANIMATION_DURATIONS } from '../constants/modelPaths';
 import { Character3D } from './Character3D'
 import { SoundManager } from './CategoryGrid';
+import { useAccessibility } from '../contexts/AccessibilityContext';
+import './GuestGame.css';
+import '../index.css';
+import '../styles/model.css';
+import '../styles/fixes.css';
+import '../styles/animations.css';
+import '../styles/base.css';
+import '../styles/responsive.css';
 
 
 interface Answer {
@@ -64,6 +71,15 @@ const CAST_GIF = '/effects/cast.gif';
 const SUFFER_GIF = '/effects/suffer.gif';
 
 export function GuestGame() {
+  // Add announcer for screen readers
+  const [announcement, setAnnouncement] = useState<string>('');
+  
+  useEffect(() => {
+    if (announcement) {
+      const timer = setTimeout(() => setAnnouncement(''), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [announcement]);
   const navigate = useNavigate();
   const { startGuestSession, endGuestSession } = useAuth();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -93,6 +109,10 @@ export function GuestGame() {
   const [npcEffect, setNpcEffect] = useState<string | null>(null); // For NPC's GIF
   const [playerGif, setPlayerGif] = useState<string | null>(null); // Either "cast" or "suffer"
   const [npcGif, setNpcGif] = useState<string | null>(null); // Either "cast" or "suffer"
+  const { isMobile, reducedMotion, highContrast } = useAccessibility();
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [orientation, setOrientation] = useState(window.screen.orientation.type);
+
 
 
   const triggerGif = useCallback(
@@ -254,6 +274,21 @@ export function GuestGame() {
     setSelectedAnswer(answerKey);
   }, [isAnimating]);
   
+  // Add keyboard handlers for buttons
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const focusedElement = document.activeElement;
+        if (focusedElement?.getAttribute('role') === 'button') {
+          focusedElement.click();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
   const getCurrentQuestion = (): QuizQuestion | undefined => {
     return questions[currentQuestionIndex];
   };
@@ -270,13 +305,14 @@ export function GuestGame() {
     if (isCorrect) {
       setScore(prev => prev + 100);
       setHp(prev => Math.min(prev + 1, 5));
+      setAnnouncement("Correct answer! You gained health and attacked the enemy!");
 
       setPlayerEffect('/effects/cast.gif');
       setNpcEffect('/effects/suffer.gif');
       triggerGif('player', 'cast', 4000); // Player "cast" GIF
       triggerGif('npc', 'suffer', 4000); // NPC "suffer" GIF
       playSound('correct');
-      playSound('npccry', 10000);
+      playSound('npccry');
       
       // Player attacks, NPC gets hit
       playAnimationSequence(
@@ -286,6 +322,7 @@ export function GuestGame() {
       );
     } else {
       setHp(prev => prev - 1);
+      setAnnouncement("Incorrect answer! Enemy attacks and you lose health!");
 
       setPlayerEffect('/effects/suffer.gif');
       setNpcEffect('/effects/cast.gif');
@@ -293,8 +330,8 @@ export function GuestGame() {
       triggerGif('npc', 'cast', 1000); // NPC "cast" GIF
       triggerGif('player', 'suffer', 1000); // Player "suffer" GIF
       playSound('wrong');
-      playSound('grunt',10000);
-      playSound('painhum',10000);
+      playSound('grunt');
+      playSound('painhum');
       
       // NPC attacks, Player gets hit
       playAnimationSequence(
@@ -305,6 +342,7 @@ export function GuestGame() {
   
       // Check for game over
       if (hp <= 1) {
+        setAnnouncement("Game Over! You've been defeated!");
         playAnimationSequence(
           3, // Player hit/defeat animation index
           3, // NPC victory animation index
@@ -333,9 +371,19 @@ export function GuestGame() {
     };
   }, [resetModels]);
 
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      setOrientation(window.screen.orientation.type);
+    };
+
+    window.addEventListener('orientationchange', handleOrientationChange);
+    return () => window.removeEventListener('orientationchange', handleOrientationChange);
+  }, []);
+
   // Update game complete check
   useEffect(() => {
     if (currentQuestionIndex >= 5 && hp >= 3) {
+      setAnnouncement("Congratulations! You've completed the game!");
       playAnimationSequence(
         2, // Player attack animation index
         4, // NPC defeat animation index
@@ -357,6 +405,30 @@ export function GuestGame() {
       setGameComplete(true);
     }
   }, [currentQuestionIndex, hp, playAnimationSequence]);
+
+  useEffect(() => {
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+  
+    setVH();
+    window.addEventListener('resize', setVH);
+    return () => window.removeEventListener('resize', setVH);
+  }, []);
+
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      // Force re-render after orientation change
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
+    };
+  
+    window.addEventListener('orientationchange', handleOrientationChange);
+    return () => window.removeEventListener('orientationchange', handleOrientationChange);
+  }, []);
+  
   
 
   const handleSignUp = () => {
@@ -380,14 +452,18 @@ export function GuestGame() {
     };
   
     return (
+      <div className={`GuestGame ${highContrast ? 'high-contrast' : ''}`}>
       <div
-        className="guest-game-wrapper"
+        className={`guest-game-container ${orientation.includes('landscape') ? 'landscape' : 'portrait'}`}
         style={{
-          backgroundImage: 'url(/assets/guestgame.jpg)',
+          backgroundImage: highContrast ? 'none' : 'url(/assets/guestgame.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           minHeight: '100vh',
+          minWidth: '100vw',
           position: 'relative', // Add this for layering
+          overflow: 'hidden',
+          transition: reducedMotion ? 'none' : 'all 0.3s ease'
         }}
       >
         <Header
@@ -399,61 +475,102 @@ export function GuestGame() {
     
         {/* Right Model */}
         <div
+          className="model-container right-model"
           style={{
             position: 'absolute',
             top: 0,
             right: 0,
-            height: '100%',
-            width: '50%',
             pointerEvents: 'none',
-            zIndex: 1, // Lower priority than buttons
+            zIndex: 1,
+            transition: reducedMotion ? 'none' : 'all 0.3s ease',
+            filter: highContrast ? 'grayscale(100%) contrast(200%)' : 'none'
           }}
         >
-          <Canvas camera={{ position: [5, 2, 5], fov: 50 }}>
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[-10, 10, 5]} intensity={10} />
-            <Character3D
-              modelPath={MODEL_PATHS.NPC.BASE.model}
-              animationPaths={MODEL_PATHS.NPC.BASE.animations}
-              position={[2, -2, 0]}
-              scale={0.02}
-              rotation={[0, -Math.PI / 0.25, 0]}
-              currentAnimation={npcState.currentAnimation}
-            />
-            <Environment preset="park" />
-          </Canvas>
+          <div className="model-container-wrapper" role="img" aria-label="Enemy character model">
+            <Canvas 
+              camera={{ 
+                position: [5, 2, 5], 
+                fov: isMobile ? 60 : 50 
+              }}
+              style={{ opacity: isLoading ? 0.5 : 1 }}
+            >
+              <ambientLight intensity={0.5} />
+              <directionalLight position={[-10, 10, 5]} intensity={10} />
+              <Character3D
+                modelPath={MODEL_PATHS.NPC.BASE.model}
+                animationPaths={MODEL_PATHS.NPC.BASE.animations}
+                position={[2, -2, 0]}
+                scale={isMobile ? 0.015 : 0.02}
+                rotation={[0, -Math.PI / 0.25, 0]}
+                currentAnimation={npcState.currentAnimation}
+              />
+              <Environment preset="park" />
+            </Canvas>
+            <div className="model-fallback" role="alert">
+              <p>Unable to display 3D model</p>
+              <p>Character is {npcState.currentAnimation === 0 ? 'idle' : 
+                npcState.currentAnimation === 1 ? 'attacking' : 
+                npcState.currentAnimation === 2 ? 'being hit' : 
+                'celebrating victory'}</p>
+            </div>
+          </div>
         </div>
     
         {/* Left Model */}
         <div
+          className="model-container left-model"
+          aria-hidden="true"
           style={{
             position: 'absolute',
             top: 0,
             left: 0,
-            height: '100%',
-            width: '50%',
             pointerEvents: 'none',
-            zIndex: 1, // Lower priority than buttons
+            zIndex: 1,
+            transition: reducedMotion ? 'none' : 'all 0.3s ease',
+            filter: highContrast ? 'grayscale(100%) contrast(200%)' : 'none'
           }}
         >
-          <Canvas camera={{ position: [-5, 2, 5], fov: 50 }}>
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 5]} intensity={7} />
-            <Character3D
-              modelPath={MODEL_PATHS.PLAYER.BASE.model}
-              animationPaths={MODEL_PATHS.PLAYER.BASE.animations}
-              position={[-2, -2, 0]}
-              scale={0.02}
-              rotation={[0, Math.PI / 0.5, 0]}
-              currentAnimation={playerState.currentAnimation}
-            />
-            <Environment preset="park" />
-          </Canvas>
+          <div className="model-container-wrapper" role="img" aria-label="Player character model">
+            <Canvas 
+              camera={{ 
+                position: [-5, 2, 5], 
+                fov: isMobile ? 60 : 50 
+              }}
+              style={{ opacity: isLoading ? 0.5 : 1 }}
+            >
+              <ambientLight intensity={0.5} />
+              <directionalLight position={[10, 10, 5]} intensity={7} />
+              <Character3D
+                modelPath={MODEL_PATHS.PLAYER.BASE.model}
+                animationPaths={MODEL_PATHS.PLAYER.BASE.animations}
+                position={[-2, -2, 0]}
+                scale={isMobile ? 0.015 : 0.02}
+                rotation={[0, Math.PI / 0.5, 0]}
+                currentAnimation={playerState.currentAnimation}
+              />
+              <Environment preset="park" />
+            </Canvas>
+            <div className="model-fallback" role="alert">
+              <p>Unable to display 3D model</p>
+              <p>Character is {playerState.currentAnimation === 0 ? 'idle' : 
+                playerState.currentAnimation === 1 ? 'attacking' : 
+                playerState.currentAnimation === 2 ? 'being hit' : 
+                'defeated'}</p>
+            </div>
+          </div>
         </div>
     
         {/* Buttons Section */}
         <div
-          className="guest-game-complete flex flex-col items-center justify-center min-h-[400px] text-center text-white"
+          className={`
+            guest-game-complete 
+            flex flex-col 
+            items-center 
+            justify-center 
+            min-h-[400px] 
+            text-center 
+            ${highContrast ? 'text-white' : 'text-white'}
+          `}
           style={{
             position: 'absolute',
             top: 0,
@@ -462,6 +579,7 @@ export function GuestGame() {
             height: '100%',
             zIndex: 10, // Ensure it appears above the models
             pointerEvents: 'auto', // Enable interactions
+            transition: reducedMotion ? 'none' : 'all 0.3s ease'
           }}
         >
           <h2 className="text-3xl font-bold mb-4">
@@ -475,6 +593,9 @@ export function GuestGame() {
               onClick={handleSignUp}
               onMouseEnter={() => playSound('hover')}
               className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              role="button"
+              aria-label="Sign up to save progress"
+              tabIndex={0}
             >
               Sign Up
             </button>
@@ -482,6 +603,9 @@ export function GuestGame() {
               onClick={handleLogin}
               onMouseEnter={() => playSound('hover')}
               className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              role="button" 
+              aria-label="Log in to existing account"
+              tabIndex={0}
             >
               Login
             </button>
@@ -489,25 +613,35 @@ export function GuestGame() {
               onClick={handleReplay}
               onMouseEnter={() => playSound('hover')}
               className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              role="button"
+              aria-label="Replay current game"
+              tabIndex={0}
             >
               Replay
             </button>
           </div>
         </div>
       </div>
+      </div>
     );    
   }
 
   return (
+    <div className={`GuestGame ${highContrast ? 'high-contrast' : ''}`}>
+      <div aria-live="polite" className="sr-only">
+        {announcement}
+      </div>
     <div
-        className="guest-game-wrapper"
+        className={`guest-game-container ${orientation.includes('landscape') ? 'landscape' : 'portrait'}`}
         style={{
-          backgroundImage: 'url(/assets/guestgame.jpg)',
+          backgroundImage: highContrast ? 'none' : 'url(/assets/guestgame.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           minHeight: '100vh',
+          minWidth: '100vw',
           position: 'relative',
           overflow: 'hidden', // Ensures models stay within bounds
+          transition: reducedMotion ? 'none' : 'all 0.3s ease'
         }}
       >
       <Header 
@@ -520,7 +654,8 @@ export function GuestGame() {
       {playerEffect && (
         <img
           src={playerEffect}
-          alt="Player Effect"
+          alt="Player casting attack effect"
+          aria-hidden="true"
           className="absolute left-20 top-1/2 transform -translate-y-1/2"
           style={{ width: '400px', height: '700px', pointerEvents: 'none' }}
         />
@@ -530,7 +665,8 @@ export function GuestGame() {
       {npcEffect && (
         <img
           src={npcEffect}
-          alt="NPC Effect"
+          alt="NPC attack effect"
+          aria-hidden="true"
           className="absolute right-20 top-1/2 transform -translate-y-1/2"
           style={{ width: '400px', height: '700px', pointerEvents: 'none' }}
         />
@@ -545,9 +681,11 @@ export function GuestGame() {
             height: '100%',
             width: '50%', // Right half of the screen
             pointerEvents: 'none', // Prevents interfering with UI interactions
+            transition: reducedMotion ? 'none' : 'all 0.3s ease',
+            filter: highContrast ? 'grayscale(100%) contrast(200%)' : 'none'
           }}
         >
-          <Canvas camera={{ position: [5, 2, 5], fov: 50 }}>
+          <Canvas onCreated={() => setModelsLoaded(true)} camera={{ position: [5, 2, 5], fov: 50 }}>
             <ambientLight intensity={0.5} />
             <directionalLight position={[-10, 10, 5]} intensity={10} />
             <Character3D
@@ -564,7 +702,8 @@ export function GuestGame() {
         {npcGif && (
           <img
             src={npcGif === 'cast' ? CAST_GIF : SUFFER_GIF}
-            alt={`${npcGif} GIF`}
+            alt={npcGif === 'cast' ? 'Enemy casting attack' : 'Enemy taking damage'}
+            aria-hidden="true"
             className="gif-overlay"
           />
         )}
@@ -579,9 +718,11 @@ export function GuestGame() {
             height: '100%',
             width: '50%', // Left half of the screen
             pointerEvents: 'none', // Prevents interfering with UI interactions
+            transition: reducedMotion ? 'none' : 'all 0.3s ease',
+            filter: highContrast ? 'grayscale(100%) contrast(200%)' : 'none'
           }}
         >
-          <Canvas camera={{ position: [-5, 2, 5], fov: 50 }}>
+          <Canvas onCreated={() => setModelsLoaded(true)} camera={{ position: [-5, 2, 5], fov: 50 }}>
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 5]} intensity={7} />
             <Character3D
@@ -598,20 +739,15 @@ export function GuestGame() {
         {playerGif && (
           <img
             src={playerGif === 'cast' ? CAST_GIF : SUFFER_GIF}
-            alt={`${playerGif} GIF`}
+            alt={playerGif === 'cast' ? 'Player casting attack' : 'Player taking damage'}
+            aria-hidden="true"
             className="gif-overlay"
           />
         )}
         </div> 
       {/* Game Progress Container - Positioned below the Header */}
         <div 
-          className="game-progress-container mt-0 flex justify-center"
-          style={{ 
-            minHeight: '50px', // Example to reduce height in guest mode
-            transform: 'scale(0.8)', // Scale down the component
-            padding: '0px', // Reduce padding
-            marginBottom: '-20px',
-          }}
+          className="game-progress-container-guest flex justify-center"
         >
           <GameProgress profile={userProfile} hp={hp} />
         </div>
@@ -625,17 +761,11 @@ export function GuestGame() {
           <div className="text-white">
             {/* Main Wrapper */}
             <div
-              className="guest-game-wrapper flex items-center justify-center"
-              style={{
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                minHeight: '5vh',
-                marginBottom: '-4px',
-              }}
+              className="guest-game-wrapper flex items-center justify-center responsive-container"
             >
                 
               {/* Question Container */}
-              <div className="question-container bg-cover bg-center shadow-lg rounded-lg p-8 text-white relative mt-0">
+              <div className="question-container bg-cover bg-center shadow-lg rounded-lg p-4 text-white relative mt-0">
                 {/* Add a background image to the question container */}
                 <div
                   className="question-container-bg absolute inset-0 rounded-lg z-0"
@@ -648,7 +778,7 @@ export function GuestGame() {
                 ></div>
                 
                 {/* Category and Difficulty */}
-                <div className="category-difficulty ">
+                <div className="category-difficulty" role="status" aria-live="polite">
                 IQ {currentQuestionIndex + 1}/5 | {getCurrentQuestion()?.category} | {getCurrentQuestion()?.difficulty}
                   </div>
                 {/* Overlay for enhanced readability */}
@@ -659,12 +789,20 @@ export function GuestGame() {
                 <div className="relative z-20">
                   {/* Header or Title */}
                   
-                  <h2 className="text-4xl font-bold mb-6 text-center animate-fade-in">
+                  <h2 
+                    className="font-bold text-center animate-fade-in"
+                    style={{ marginBottom: 'clamp(1rem, 3vw, 2.5rem)' }} 
+                    role="heading"
+                    aria-level={1}
+                    aria-label={`Question ${currentQuestionIndex + 1}`}>
                     {getCurrentQuestion()?.question}
                   </h2>
 
                   {/* Answer Options */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div 
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                    role="radiogroup"
+                    aria-label="Answer options">
                     {Object.entries(getCurrentQuestion()?.answers || {}).map(([key, value], index) => {
                       if (!value) return null;
                       const answerKey = key as AnswerKey;
@@ -674,7 +812,10 @@ export function GuestGame() {
                           key={answerKey}
                           onClick={() => handleAnswerSelect(answerKey)}
                           onMouseEnter={() => playSound('hover')}
-                          className={`p-4 rounded-lg transition-all text-left font-medium text-lg flex items-center gap-4
+                          role="radio"
+                          aria-checked={selectedAnswer === answerKey}
+                          aria-label={`Option ${optionLabel}: ${value}`}
+                          className={`p-4 rounded-lg transition-all text-left flex items-center gap-4
                             ${selectedAnswer === answerKey
                               ? 'bg-blue-600 text-white shadow-lg'
                               : 'bg-gray-100/10 hover:bg-gray-100/20 text-gray-200'}`}
@@ -698,6 +839,9 @@ export function GuestGame() {
                     onClick={() => setShowResult(true)}
                     onMouseEnter={() => playSound('attack')}
                     className="px-8 py-3 bg-green-500 hover:bg-green-600 rounded-lg text-white font-bold transition-colors"
+                    role="button"
+                    aria-label="Attack with selected answer"
+                    tabIndex={0}
                   >
                     Attack
                   </button>
@@ -707,6 +851,9 @@ export function GuestGame() {
                     onClick={handleNextQuestion}
                     onMouseEnter={() => playSound('sonique')}
                     className="px-8 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-bold transition-colors"
+                    role="button"
+                    aria-label={currentQuestionIndex >= 4 ? "Complete game" : "Continue to next question"}
+                    tabIndex={0}
                   >
                     {currentQuestionIndex >= 4 ? 'Finish' : 'Sonique'}
                   </button>
@@ -739,6 +886,7 @@ export function GuestGame() {
           }}
         />
       )}
+    </div>
     </div>
   );
 }

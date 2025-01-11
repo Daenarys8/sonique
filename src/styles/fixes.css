@@ -1,0 +1,38 @@
+/* Consolidated fixes */
+/* Fixes consolidated from game-interface-fixes.css and small-screen-fixes.css */
+
+/* Common fixes */
+.mobile-padding-fix {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .ios-height-fix {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Android specific fixes */
+@supports (-webkit-appearance: none) {
+  .android-height-fix {
+    height: 100vh;
+  }
+}
+
+/* Browser compatibility fixes */
+.firefox-flex-fix {
+  min-height: 0;
+}
+
+.safari-flex-fix {
+  -webkit-flex-basis: auto;
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+  .touch-friendly {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

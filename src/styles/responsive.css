@@ -1,0 +1,618 @@
+/* Base responsive styles */
+@import './container-responsive.css';
+
+/* Common container styles */
+.container,
+.category-grid-container,
+.puzzle-screen-container,
+.start-page-container,
+.login-form-container,
+.loading-page-container,
+.guest-game-container,
+.battle-scene-container {
+  @apply mx-auto px-4 w-full flex flex-col items-center justify-center;
+  min-height: calc(100vh - 4rem);
+}
+
+/* Button centering and scaling */
+.button-container,
+.form-button-container,
+.controls-container {
+  @apply flex justify-center items-center gap-4 w-full;
+  position: relative;
+  max-width: min(500px, 90vw);
+  margin: 1rem auto;
+  padding: 1rem;
+}
+:root {
+  --min-button-width: 120px;
+  --max-button-width: 300px;
+  --min-input-width: 240px;
+  --container-padding: 1rem;
+}
+
+/* Common container styles */
+.responsive-container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Center content */
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 1rem;
+}
+
+/* Text container */
+.text-container {
+  max-width: 100%;
+  word-break: break-word;
+  padding: 0 1rem;
+}
+:root {
+  /* These should be moved to screen-sizes.css if not already there */
+  --min-touch-target: 44px;
+  --container-padding-sm: 1rem;
+  --container-padding-md: 1.5rem;
+  --container-padding-lg: 2rem;
+  --category-card-min-height: 120px;
+}
+
+/* Text scaling for accessibility */
+@media screen and (max-width: 320px) {
+  .text-scale {
+    font-size: 14px;
+  }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.1rem; }
+}
+
+@media screen and (min-width: 321px) and (max-width: 768px) {
+  .text-scale {
+    font-size: 16px;
+  }
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+}
+
+/* Button positioning and sizing */
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem auto;
+  width: 100%;
+  max-width: 800px;
+}
+
+.responsive-button {
+  min-width: var(--min-button-width);
+  max-width: var(--max-button-width);
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  font-size: clamp(14px, 2.5vw, 16px);
+  height: auto;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.responsive-button:hover {
+  transform: scale(1.02);
+}
+
+@media screen and (max-width: 480px) {
+  .button-container {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 1rem;
+  }
+  
+  .responsive-button {
+    width: 100%;
+    max-width: 300px;
+    margin: 0.25rem auto;
+    font-size: 16px;
+  }
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 480px) {
+  /* Touch-friendly button sizes */
+  .responsive-button,
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem;
+    font-size: 16px;
+  }
+
+  /* Stack buttons vertically */
+  .button-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Adjust container padding */
+  .container {
+    padding: 0.5rem;
+  }
+}
+
+/* Landscape orientation handling */
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .landscape-adjust {
+    padding: 0.5rem;
+    margin: 0.5rem;
+  }
+  
+  .button-container {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
+
+/* Touch-friendly sizes */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  .responsive-button,
+  .form-control {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+    min-height: 44px;
+  }
+}
+
+/* Component-specific responsive styles */
+
+/* Common responsive container for all main components */
+.responsive-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: var(--container-padding);
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Button centering and responsive sizing */
+.centered-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+@media screen and (max-width: 480px) {
+  .centered-button-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .centered-button {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+/* Text scaling for different screen sizes */
+@media screen and (max-width: 320px) {
+  .responsive-text {
+    font-size: clamp(14px, 4vw, 16px);
+  }
+  .responsive-heading {
+    font-size: clamp(18px, 5vw, 24px);
+  }
+}
+
+@media screen and (min-width: 321px) and (max-width: 768px) {
+  .responsive-text {
+    font-size: clamp(16px, 3vw, 18px);
+  }
+  .responsive-heading {
+    font-size: clamp(24px, 4vw, 32px);
+  }
+}
+
+/* Form responsiveness */
+.responsive-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+@media screen and (max-width: 480px) {
+  .responsive-form {
+    padding: 0.5rem;
+  }
+  
+  .responsive-form input,
+  .responsive-form button {
+    font-size: 16px;
+    min-height: 44px;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (orientation: landscape) {
+  .model-container {
+    height: 80vh;
+  }
+  
+  .button-container,
+  .form-button-container,
+  .controls-container {
+    flex-direction: row;
+    gap: 1rem;
+    position: relative;
+    transform: none;
+    left: auto;
+    top: auto;
+    margin: 1rem auto;
+  }
+  
+  .question-container {
+    margin-top: 0rem;
+  }
+  
+  .loading-text {
+    max-width: 70%;
+  }
+}
+
+/* Make sure buttons stay centered on mobile landscape */
+@media (orientation: landscape) and (max-height: 500px) {
+  .button-container,
+  .form-button-container,
+  .controls-container {
+    position: relative;
+    transform: none;
+    left: auto;
+    top: auto;
+    margin: 0.5rem auto;
+  }
+}
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .responsive-page-container {
+    padding: 0.5rem;
+  }
+  
+  .centered-button-container {
+    margin: 0.5rem auto;
+  }
+  
+  .responsive-text {
+    font-size: 14px;
+  }
+  
+  .responsive-heading {
+    font-size: 18px;
+  }
+}
+
+/* Component-specific responsive styles */
+
+/* StartPage Container */
+.start-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 0; /* Remove padding here so the background covers the full height */
+  position: relative; /* Make sure the pseudo-element can be used */
+  text-align: center;
+}
+
+/* Add a pseudo-element for the background to ensure it covers the entire screen */
+.start-page-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1; /* Ensure it's behind the content */
+}
+
+/* Add padding to content, this keeps it inside the container without affecting the background */
+.start-page-container .content {
+  position: relative; /* Ensure content stays above the background */
+}
+
+.start-page-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+@media screen and (max-width: 480px) {
+  .start-page-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .start-page-container h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* LoginForm */
+.login-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--container-padding);
+}
+
+.login-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 480px) {
+  .login-form {
+    padding: 1rem;
+  }
+  
+  .login-form input,
+  .login-form button {
+    font-size: 16px;
+    min-height: 44px;
+  }
+}
+
+/* LoadingPage */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: var(--container-padding);
+}
+
+.loading-text {
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  line-height: 1.6;
+}
+
+.battle-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Battle scene responsive positioning */
+.battle-model-container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.battle-model-container.left {
+  left: 0;
+}
+
+.battle-model-container.right {
+  right: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .battle-model-container {
+    transform: translateY(-50%) scale(0.8);
+  }
+
+  .battle-controls {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .battle-model-container {
+    transform: translateY(-50%) scale(0.6);
+  }
+}
+
+/* Shared mobile styles */
+@media screen and (max-width: 768px) {
+  /* Ensure buttons are properly sized and centered on mobile */
+  .responsive-button,
+  button {
+    width: 100%;
+    max-width: 300px;
+    min-height: 44px;
+    font-size: 16px;
+    margin: 0 auto;
+  }
+
+  /* Improve text readability */
+  h1, .h1 { font-size: 1.5rem; }
+  h2, .h2 { font-size: 1.25rem; }
+  h3, .h3 { font-size: 1.1rem; }
+  p, .text { font-size: 1rem; }
+
+
+  /* Center content better on small screens */
+  .center-content {
+    text-align: center;
+  }
+  .battle-controls {
+    gap: 0.5rem;
+  }
+  
+  .battle-model-container {
+    transform: scale(0.8);
+  }
+}
+
+/* CategoryGrid */
+.category-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  padding: var(--container-padding);
+}
+
+@media screen and (max-width: 640px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .category-card {
+    min-height: 180px;
+  }
+}
+
+/* Base container styles for all major components */
+.container,
+.category-grid-container,
+.puzzle-screen-container,
+.login-form-container,
+.loading-page-container,
+.battle-scene-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-width: 100%;
+}
+
+/* Interactive elements base styles */
+.interactive {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+  padding: 12px;
+  margin: 4px;
+  touch-action: manipulation;
+}
+
+/* Portrait Mode Layouts */
+@media screen and (orientation: portrait) {
+  .category-grid-container {
+    padding: var(--container-padding-sm);
+  }
+  
+  .puzzle-content {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+/* Landscape Mode Layouts */
+@media screen and (orientation: landscape) {
+  .category-grid-container {
+    padding: var(--container-padding-sm) calc(var(--container-padding-sm) * 2);
+  }
+  
+  .puzzle-content {
+    max-width: 80%;
+    margin: 0 auto;
+  }
+}
+
+/* Responsive Breakpoints */
+/* Mobile (up to 640px) */
+@media (max-width: var(--breakpoint-sm)) {
+  .category-card {
+    min-height: var(--category-card-min-height);
+  }
+  
+  .puzzle-screen-container {
+    padding: var(--container-padding-sm);
+  }
+}
+
+/* Tablet (640px and up) */
+@media (min-width: var(--breakpoint-sm)) {
+  .container,
+  .category-grid-container,
+  .puzzle-screen-container {
+    padding: var(--container-padding-md);
+  }
+  
+  .category-grid-container.landscape {
+    padding: var(--container-padding-md) calc(var(--container-padding-md) * 2);
+  }
+}
+
+/* Desktop (768px and up) */
+@media (min-width: var(--breakpoint-md)) {
+  .container,
+  .category-grid-container,
+  .puzzle-screen-container {
+    padding: var(--container-padding-lg);
+  }
+  
+  .category-grid-container.landscape {
+    padding: var(--container-padding-lg) calc(var(--container-padding-lg) * 2);
+  }
+}
+
+/* Large Screens (2000px and up) */
+@media (min-width: 2000px) {
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .interactive {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* High DPI Screen Optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), 
+       (min-resolution: 192dpi) {
+  .category-card,
+  .puzzle-screen-container {
+    border-width: 0.5px;
+  }
+}

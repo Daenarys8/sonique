@@ -1,0 +1,137 @@
+/* Main container styles */
+.page-container {
+  @apply mx-auto px-4 w-full flex flex-col items-center justify-center;
+  min-height: 100vh;
+  max-width: min(100vw, 1200px);
+}
+
+/* Loading screen container */
+.loading-container {
+  @apply flex flex-col items-center justify-center;
+  text-align: center;
+  padding: 1rem;
+}
+
+.loading-text {
+  font-size: clamp(0.875rem, 2vw, 1.125rem);
+  line-height: 1.5;
+  max-width: min(800px, 85%);
+  margin: 0 auto;
+}
+
+/* Button container styles */
+.button-container {
+  @apply flex justify-center items-center gap-4;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+}
+
+/* Model container styles */
+.model-container {
+  @apply relative flex items-center justify-center;
+  transform: scale(1);
+  transition: transform 0.3s ease;
+}
+
+/* Question container */
+.question-container {
+  @apply w-full mx-auto;
+  max-width: min(95vw, 64rem);
+  transform: scale(1);
+}
+
+/* Leaderboard container */
+.leaderboard-container {
+  @apply mx-auto w-full flex flex-col items-center;
+  max-width: min(95vw, 40rem);
+  transform: scale(1);
+}
+
+/* Responsive scaling */
+@media (max-width: 1024px) {
+  .model-container {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 768px) {
+  .model-container {
+    transform: scale(0.8);
+  }
+  
+  .loading-text {
+    font-size: clamp(0.75rem, 1.5vw, 1rem);
+  }
+  
+  .question-container {
+    transform: scale(0.9);
+  }
+  
+  .leaderboard-container {
+    transform: scale(0.9);
+  }
+  
+  .button-container {
+    width: 85%;
+  }
+}
+
+@media (max-width: 640px) {
+  .model-container {
+    transform: scale(0.7);
+  }
+  
+  .button-container {
+    width: 100%;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .question-container {
+    transform: scale(0.85);
+  }
+  
+  .leaderboard-container {
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 480px) {
+  .model-container {
+    transform: scale(0.6);
+  }
+  
+  .loading-text {
+    font-size: clamp(0.75rem, 1.25vw, 0.875rem);
+    max-width: 95%;
+  }
+  
+  .question-container,
+  .leaderboard-container {
+    transform: scale(0.8);
+  }
+}
+
+/* Landscape mode adjustments */
+@media (orientation: landscape) {
+  .model-container {
+    height: 80vh;
+  }
+  
+  .button-container {
+    position: relative;
+    transform: none;
+    left: auto;
+    top: auto;
+    margin: 1rem auto;
+    flex-direction: row;
+  }
+  
+  .loading-container {
+    padding: 0.5rem;
+  }
+}

@@ -1,0 +1,79 @@
+/* Shared responsive styles */
+.hidden-mobile {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+.hidden-desktop {
+  @media (min-width: 769px) {
+    display: none !important;
+  }
+}
+
+.hidden-landscape {
+  @media (orientation: landscape) {
+    display: none !important;
+  }
+}
+
+.hidden-portrait {
+  @media (orientation: portrait) {
+    display: none !important;
+  }
+}
+
+/* Responsive images */
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive aspect ratios */
+.aspect-ratio {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+}
+
+.aspect-ratio-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsive spacing utilities */
+.m-responsive {
+  margin: calc(1rem * var(--scale-ratio));
+}
+
+.p-responsive {
+  padding: calc(1rem * var(--scale-ratio));
+}
+
+/* Responsive typography */
+.text-responsive {
+  font-size: calc(1rem * var(--scale-ratio));
+  line-height: 1.5;
+}
+
+/* Responsive grid */
+.grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: calc(1rem * var(--scale-ratio));
+}
+
+@media (max-width: 768px) {
+  .grid-responsive {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-responsive {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}

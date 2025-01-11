@@ -1,5 +1,7 @@
 .category-grid-container {
   position: relative;
+  padding: var(--container-padding);
+  max-width: var(--content-max-width);
   z-index: 10;
 }
 
@@ -70,7 +72,16 @@
   z-index: 2;
 }
 
+.category-title {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+/* Base responsive styles for category cards */
 .category-card {
+  min-height: var(--min-touch-target);
+  touch-action: manipulation;
   position: relative;
   aspect-ratio: 3/4;
   border-radius: 1rem;

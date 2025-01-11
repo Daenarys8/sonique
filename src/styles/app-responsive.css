@@ -1,0 +1,104 @@
+/* App-wide responsive styles */
+:root {
+  --header-height: 50px;
+  --footer-height: 40px;
+  --container-padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-height: 40px;
+    --footer-height: 32px;
+    --container-padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --header-height: 30px;
+    --footer-height: 28px;
+    --container-padding: 0.5rem;
+  }
+}
+
+/* Layout containers */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding-top: var(--header-height);
+  padding-bottom: var(--footer-height);
+}
+
+/* Responsive text sizes */
+.text-responsive {
+  font-size: calc(1rem * var(--scale-ratio));
+}
+
+.heading-responsive {
+  font-size: calc(1.5rem * var(--scale-ratio));
+}
+
+.subheading-responsive {
+  font-size: calc(1.25rem * var(--scale-ratio));
+}
+
+/* Responsive spacing */
+.spacing-responsive {
+  padding: calc(var(--container-padding) * var(--scale-ratio));
+  margin: calc(var(--container-padding) * var(--scale-ratio));
+}
+
+/* Touch target sizes */
+@media (hover: none) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Landscape mode optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .app-container.landscape {
+    flex-direction: row;
+  }
+
+  .main-content.landscape {
+    padding-top: 0;
+    padding-left: var(--header-height);
+  }
+}
+
+/* High contrast and reduced motion support */
+@media (prefers-contrast: high) {
+  .app-container {
+    background: #fff;
+    color: #000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .app-container {
+    display: block;
+  }
+
+  .main-content {
+    padding: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
