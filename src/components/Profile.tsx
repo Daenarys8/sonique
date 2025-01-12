@@ -2,7 +2,7 @@ import React from 'react';
 import { User, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { UserProfile } from '../types/game'; // adjust import path as needed
+import { UserProfile } from '../types/game'; // Adjust import path if needed
 
 type ProfileProps = {
   onClose: () => void;
@@ -88,12 +88,26 @@ export function Profile({ onClose, onLogin, onSignup }: ProfileProps) {
   return (
     <div 
       className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50
-        animate-fadeIn motion-reduce:animate-none">
+        animate-fadeIn motion-reduce:animate-none"
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 50,
+      }}
+    >
       <div 
-        className="bg-black/90 rounded-lg p-6 w-96 border border-indigo-500/30 shadow-lg shadow-indigo-500/20">
+        className="bg-black/90 rounded-lg p-6 w-96 border border-indigo-500/30 shadow-lg shadow-indigo-500/20"
+        style={{
+          maxHeight: 'clamp(400px, 80vh, 600px)', // Apply the clamp for max-height
+          overflowY: 'auto', // Enable scrolling when content exceeds max height
+        }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white font-orbitron">Profile</h2>
+          <h2 className="text-2xl font-bold text-white font-orbitron" style={{ fontSize: 'clamp(1.25rem, 2vw, 2rem)' }}>
+            Profile
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"

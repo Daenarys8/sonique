@@ -35,12 +35,22 @@ export function Settings({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50
-      animate-fadeIn motion-reduce:animate-none">
-      <div className="bg-black/90 rounded-lg p-6 w-96 border border-indigo-500/30 shadow-lg shadow-indigo-500/20">
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn motion-reduce:animate-none">
+      <div 
+        className="bg-black/90 rounded-lg p-6 w-96 border border-indigo-500/30 shadow-lg shadow-indigo-500/20"
+        style={{
+          maxHeight: 'clamp(400px, 80vh, 600px)', // Apply clamp for max height
+          overflowY: 'auto', // Enable scrolling when content exceeds max height
+        }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white font-orbitron">Settings</h2>
+          <h2 
+            className="text-2xl font-bold text-white font-orbitron"
+            style={{ fontSize: 'clamp(1.25rem, 2vw, 2rem)' }} // Apply clamp for font size
+          >
+            Settings
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
@@ -55,11 +65,17 @@ export function Settings({
           {/* Master Sound Control */}
           <div className="flex items-center justify-between group">
             <div className="space-y-1">
-              <span className="text-white font-tech-mono flex items-center gap-2">
+              <span 
+                className="text-white font-tech-mono flex items-center gap-2"
+                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
+              >
                 <Gamepad size={20} />
                 Master Sound
               </span>
-              <p className="text-gray-400 text-sm">
+              <p 
+                className="text-gray-400 text-sm"
+                style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)' }} // Apply clamp for font size
+              >
                 {isSoundEnabled ? 'Game audio is enabled' : 'Game audio is disabled'}
               </p>
             </div>
@@ -80,11 +96,19 @@ export function Settings({
           {/* Music Volume */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-white font-tech-mono flex items-center gap-2">
+              <span 
+                className="text-white font-tech-mono flex items-center gap-2"
+                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
+              >
                 <Music size={20} />
                 Music Volume
               </span>
-              <span className="text-gray-400 text-sm font-mono">{musicVolume}%</span>
+              <span 
+                className="text-gray-400 text-sm font-mono"
+                style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)' }} // Apply clamp for font size
+              >
+                {musicVolume}%
+              </span>
             </div>
             <input 
               type="range" 
@@ -101,11 +125,19 @@ export function Settings({
           {/* Sound Effects Volume */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-white font-tech-mono flex items-center gap-2">
+              <span 
+                className="text-white font-tech-mono flex items-center gap-2"
+                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
+              >
                 <Volume2 size={20} />
                 Effects Volume
               </span>
-              <span className="text-gray-400 text-sm font-mono">{effectsVolume}%</span>
+              <span 
+                className="text-gray-400 text-sm font-mono"
+                style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)' }} // Apply clamp for font size
+              >
+                {effectsVolume}%
+              </span>
             </div>
             <input 
               type="range" 
@@ -131,6 +163,7 @@ export function Settings({
               border border-gray-600/30 hover:border-gray-500/30
               focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:ring-offset-2 
               focus:ring-offset-black/90 transform hover:scale-[1.02]"
+            style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
           >
             Cancel
           </button>
@@ -143,6 +176,7 @@ export function Settings({
               focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 
               focus:ring-offset-black/90 transform hover:scale-[1.02]
               disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
           >
             {isSaving ? (
               <span className="flex items-center justify-center gap-2">

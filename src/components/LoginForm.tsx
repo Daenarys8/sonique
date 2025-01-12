@@ -20,6 +20,7 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
   const { login, loginAsGuest, error } = useAuth();
   const navigate = useNavigate();
   const soundManagerRef = useRef<SoundManager | null>(null);
+
   const handleSuccessfulLogin = () => {
     navigate(redirectPath, { replace: true });
   };
@@ -58,30 +59,58 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
   };
 
   useEffect(() => {
-        // Initialize sound manager with all sound effects
-        soundManagerRef.current = new SoundManager(SOUND_EFFECTS);
-    
-        return () => {
-          soundManagerRef.current = null;
-        };
-      }, []);
-  
-    const playSound = (soundType: keyof typeof SOUND_EFFECTS) => {
-        soundManagerRef.current?.play(soundType);
+    soundManagerRef.current = new SoundManager(SOUND_EFFECTS);
+    return () => {
+      soundManagerRef.current = null;
     };
+  }, []);
+
+  const playSound = (soundType: keyof typeof SOUND_EFFECTS) => {
+    soundManagerRef.current?.play(soundType);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center form-container">
-      <div className="bg-opacity-80 bg-black container max-w-md w-full p-6 rounded-lg shadow-lg fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-indigo-500/30">
-        <h2 className="text-2xl font-bold text-white mb-6 font-orbitron">Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div
+        className="bg-opacity-80 bg-black container max-w-md w-full p-6 rounded-lg shadow-lg fixed"
+        style={{
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          border: '1px solid rgba(75, 85, 99, 0.3)',
+          padding: 'clamp(1rem, 3vw, 2rem)',
+        }}
+      >
+        <h2
+          className="text-white font-bold mb-6 font-orbitron"
+          style={{
+            fontSize: 'clamp(1.5rem, 2vw, 2.5rem)',
+            marginBottom: 'clamp(1rem, 3vw, 2rem)',
+          }}
+        >
+          Login
+        </h2>
+        <form onSubmit={handleSubmit} style={{ gap: 'clamp(0.5rem, 1.5vw, 1rem)' }}>
           {error && (
-            <div className="p-3 bg-red-900/50 text-red-200 rounded-lg border border-red-500/50">
+            <div
+              style={{
+                padding: 'clamp(0.5rem, 1vw, 0.75rem)',
+                borderRadius: '0.5rem',
+                backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                border: '1px solid rgba(239, 68, 68, 0.5)',
+              }}
+            >
               {error}
             </div>
           )}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-white font-tech-mono">
+            <label
+              htmlFor="username"
+              style={{
+                fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+                marginBottom: '0.5rem',
+              }}
+            >
               Username
             </label>
             <input
@@ -92,13 +121,25 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
               required
               autoComplete="username"
               disabled={isLoading}
-              className="mt-1 block w-full rounded-md bg-gray-900/50 border-indigo-500/50 text-white shadow-sm 
-                focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 
-                placeholder-gray-400"
+              style={{
+                padding: 'clamp(0.5rem, 1vw, 0.75rem)',
+                borderRadius: '0.375rem',
+                width: '100%',
+                backgroundColor: 'rgba(31, 41, 55, 0.5)',
+                border: '1px solid rgba(99, 102, 241, 0.3)',
+                color: 'white',
+                fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+              }}
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-white font-tech-mono">
+            <label
+              htmlFor="password"
+              style={{
+                fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+                marginBottom: '0.5rem',
+              }}
+            >
               Password
             </label>
             <input
@@ -109,63 +150,62 @@ export function LoginForm({ redirectPath = "/game" }: LoginFormProps) {
               required
               autoComplete="current-password"
               disabled={isLoading}
-              className="mt-1 block w-full rounded-md bg-gray-900/50 border-indigo-500/50 text-white shadow-sm 
-                focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 
-                placeholder-gray-400"
+              style={{
+                padding: 'clamp(0.5rem, 1vw, 0.75rem)',
+                borderRadius: '0.375rem',
+                width: '100%',
+                backgroundColor: 'rgba(31, 41, 55, 0.5)',
+                border: '1px solid rgba(99, 102, 241, 0.3)',
+                color: 'white',
+                fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+              }}
             />
           </div>
-
           <div className="text-right">
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-sm text-indigo-400 hover:text-indigo-300"
+              className="text-indigo-400 hover:text-indigo-300"
+              style={{
+                fontSize: 'clamp(0.75rem, 1vw, 0.875rem)',
+              }}
             >
               Forgot Password?
             </button>
           </div>
-
           <button
             type="submit"
             disabled={isLoading}
-            onMouseEnter={() => playSound('hover')}
-            className="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white 
-              bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 
-              focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 
-              transition-all duration-200 ease-in-out transform hover:scale-[1.02] 
-              font-tech-mono border border-indigo-400/50 hover:border-indigo-300"
+            className="w-full rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+            style={{
+              padding: 'clamp(0.5rem, 1vw, 0.75rem)',
+              fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+            }}
           >
-            {isLoading ? (
-              <div className="spinner-border animate-spin h-5 w-5 border-t-2 border-white rounded-full"></div>
-            ) : (
-              'Login'
-            )}
+            {isLoading ? 'Loading...' : 'Login'}
           </button>
-
           <div className="flex gap-4 mt-4">
             <button
               type="button"
               onClick={handleGuestLogin}
-              onMouseEnter={() => playSound('hover')}
               disabled={isLoading}
-              className="w-1/2 py-2 px-4 border border-gray-500/50 rounded-md shadow-sm 
-                text-sm font-medium text-gray-300 hover:bg-gray-800 focus:outline-none 
-                focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 
-                transition-all duration-200 ease-in-out transform hover:scale-[1.02] 
-                font-tech-mono"
+              className="border-gray-500/50 rounded-md shadow-sm text-gray-300 hover:bg-gray-800"
+              style={{
+                padding: 'clamp(0.5rem, 1vw, 0.75rem)',
+                fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+              }}
             >
               Continue as Guest
             </button>
             <button
               type="button"
               onClick={() => navigate('/signup')}
-              onMouseEnter={() => playSound('hover')}
               disabled={isLoading}
-              className="w-1/2 py-2 px-4 border border-indigo-500/50 rounded-md shadow-sm 
-                text-sm font-medium text-indigo-300 hover:bg-indigo-900/50 focus:outline-none 
-                focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 
-                transition-all duration-200 ease-in-out transform hover:scale-[1.02] 
-                font-tech-mono"
+              className="border-indigo-500/50 rounded-md shadow-sm text-indigo-300 hover:bg-indigo-900/50"
+              style={{
+                padding: 'clamp(0.5rem, 1vw, 0.75rem)',
+                fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+              }}
             >
               Create Account
             </button>

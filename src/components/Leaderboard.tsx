@@ -24,7 +24,7 @@ const getRankIcon = (rank: number) => {
 
 export function Leaderboard() {
   return (
-    <div className="leaderboard-container relative overflow-hidden rounded-xl shadow-2xl w-[500px] responsive-container">
+    <div className="leaderboard-container relative overflow-hidden rounded-xl shadow-2xl w-full sm:w-[500px]">
       {/* Background with overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 backdrop-blur-sm" />
 
@@ -47,10 +47,10 @@ export function Leaderboard() {
           {mockLeaderboard.map((entry) => (
             <div
               key={entry.rank}
-              className="leaderboard-entry group flex items-center justify-between w-full"
+              className="leaderboard-entry group flex items-center justify-between w-full flex-wrap sm:flex-nowrap"
             >
               {/* Rank and Username */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 mb-4 sm:mb-0">
                 <div className="rank-badge flex-shrink-0">
                   {getRankIcon(entry.rank)}
                 </div>

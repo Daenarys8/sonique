@@ -200,7 +200,9 @@ function AppRoutes() {
             path="/game" 
             element={
               <PrivateRoute>
-                <GameMainPage />
+                 <GameLayout>
+                {() => <GameContent />}
+              </GameLayout>
               </PrivateRoute>
             } 
           />

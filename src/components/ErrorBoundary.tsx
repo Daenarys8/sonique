@@ -11,6 +11,50 @@ interface State {
   error: Error | null;
 }
 
+// Simple singleton ErrorReporter class
+class ErrorReporter {
+  private static instance: ErrorReporter;
+  
+  private constructor() {}
+
+  public static getInstance(): ErrorReporter {
+    if (!ErrorReporter.instance) {
+      ErrorReporter.instance = new ErrorReporter();
+    }
+    return ErrorReporter.instance;
+  }
+
+  public reportError(error: Error, componentName: string): void {
+    // You can implement your error reporting logic here
+    // For example, sending to a logging service or analytics
+    console.error(`Error in ${componentName}:`, {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+  }
+}
+
+// Utility function to sanitize error messages
+const sanitizeErrorMessage = (error: Error | null): string => {
+  if (!error) return '';
+  
+  // Remove any sensitive information or sanitize the error message
+  // This is a basic implementation - enhance based on your needs
+  const sanitized = error.message
+    // Remove potential stack traces
+    .split('\n')[0]
+    // Remove potential file paths
+    .replace(/\/[\w/.:-]+/g, '')
+    // Remove potential memory addresses
+    .replace(/0x[a-fA-F0-9]+/g, '')
+    // Limit length
+    .slice(0, 150);
+
+  return sanitized || 'An unexpected error occurred';
+};
+
+
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
@@ -47,7 +91,7 @@ class ErrorBoundary extends Component<Props, State> {
             ${highContrast ? 'bg-black text-white' : 'bg-gray-50'}
           `}
           style={{
-            transition: reducedMotion ? 'none' : 'all 0.3s ease'
+            transition: reducedMotion ? 'none' : 'all 0.3s ease',
           }}
         >
           <div 
@@ -59,6 +103,10 @@ class ErrorBoundary extends Component<Props, State> {
               shadow-lg
               ${highContrast ? 'bg-black border border-white' : 'bg-white'}
             `}
+            style={{
+              maxWidth: 'clamp(20rem, 70%, 30rem)',
+              padding: 'clamp(1rem, 2vw, 2rem)',
+            }}
           >
             <h2 
               className={`
@@ -67,6 +115,10 @@ class ErrorBoundary extends Component<Props, State> {
                 mb-4
                 ${highContrast ? 'text-white' : 'text-red-600'}
               `}
+              style={{
+                fontSize: 'clamp(1.25rem, 2vw, 2rem)',
+                marginBottom: 'clamp(1rem, 2vw, 1.5rem)',
+              }}
               role="alert"
             >
               Something went wrong
@@ -76,6 +128,10 @@ class ErrorBoundary extends Component<Props, State> {
                 mb-4
                 ${highContrast ? 'text-white' : 'text-gray-600'}
               `}
+              style={{
+                fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+                marginBottom: 'clamp(0.75rem, 1.5vw, 1.25rem)',
+              }}
             >
               {sanitizeErrorMessage(this.state.error) || 'An unexpected error occurred'}
             </p>
@@ -93,7 +149,9 @@ class ErrorBoundary extends Component<Props, State> {
               `}
               style={{
                 transition: reducedMotion ? 'none' : 'all 0.2s ease',
-                minHeight: '44px' // WCAG touch target size
+                minHeight: '44px', // WCAG touch target size
+                fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
+                padding: 'clamp(0.5rem, 1vw, 0.75rem)',
               }}
             >
               Reload Page

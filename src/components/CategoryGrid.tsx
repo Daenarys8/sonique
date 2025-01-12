@@ -243,11 +243,13 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
       >
         {soundEnabled ? '🔊' : '🔇'}
       </button>
+      
       <div className="worlds-container">
-        <h2 className="pick-a-challenge-title text-2xl text-center font-bold text-white-800 mb-6">
-            Sonique Worlds
+        <h2 className="pick-a-challenge-title text-center font-bold text-white mb-6">
+          Sonique Worlds
         </h2>
       </div>
+  
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 p-2 sm:p-4 md:p-6">
         {categories.map((category) => (
           <button
@@ -262,10 +264,10 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
             <div className="card-content" role="button" aria-label={`Select ${category.name} category`}>
               {/* Glowing border effect */}
               <div className="glow-effect"></div>
-              
-              {/* Category name with special styling */}
+  
+              {/* Category name with responsive clamped font size */}
               <h3 className="category-title">{category.name}</h3>
-              
+  
               {/* Progress bar container */}
               <div className="progress-wrapper">
                 <div className="progress-bar-bg">
@@ -284,4 +286,4 @@ export function CategoryGrid({ onCategorySelect, userProgress = {} }: CategoryGr
       </div>
     </div>
   );
-}
+}  
