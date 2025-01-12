@@ -8,7 +8,7 @@ import { type AwsCredentialIdentity } from '@aws-sdk/types';
 
 export const AWS_REGION = 'us-east-1';
 export const USERS_TABLE = 'sonique-users';
-export const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
+export const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
 
 interface AWSClientConfig {
   region: string;

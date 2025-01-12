@@ -1,0 +1,131 @@
+/* base-properties.css */
+:root {
+  /* Touch targets */
+  --min-touch-target: 44px;
+  --touch-padding: 12px;
+  --touch-margin: 4px;
+  
+  /* Container sizing */
+  --container-padding-sm: 1rem;
+  --container-padding-md: 1.5rem;
+  --container-padding-lg: 2rem;
+  --container-padding: var(--container-padding-sm);
+  
+  /* Content dimensions */
+  --content-max-width-default: 90rem;
+  --content-max-width-large: 80%;
+  --content-max-width: var(--content-max-width-default);
+  
+  /* Typography */
+  --base-font-size-default: 16px;
+  --base-font-size-hdpi: 18px;
+  --base-font-size: var(--base-font-size-default);
+  
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  --breakpoint-ultra: 2000px;
+}
+
+/* Responsive container padding */
+@media (min-width: var(--breakpoint-sm)) {
+  :root {
+    --container-padding: var(--container-padding-md);
+  }
+}
+
+@media (min-width: var(--breakpoint-md)) {
+  :root {
+    --container-padding: var(--container-padding-lg);
+  }
+}
+
+/* Large screen content width */
+@media (min-width: var(--breakpoint-ultra)) {
+  :root {
+    --content-max-width: var(--content-max-width-large);
+  }
+}
+
+/* High-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), 
+       (min-resolution: 192dpi) {
+  :root {
+    --base-font-size: var(--base-font-size-hdpi);
+  }
+}
+
+/* Base interactive element styles */
+.interactive {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+  padding: var(--touch-padding);
+  margin: var(--touch-margin);
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .interactive {
+    --touch-padding: 16px;
+    --touch-margin: 6px;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: more) {
+  .interactive:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .interactive {
+    transition: none;
+  }
+}
+
+/* Container utilities */
+.container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* Safe area insets support */
+@supports (padding: max(0px)) {
+  .container {
+    padding-left: max(var(--container-padding), env(safe-area-inset-left));
+    padding-right: max(var(--container-padding), env(safe-area-inset-right));
+  }
+}
+
+/* System dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Print styles */
+@media print {
+  :root {
+    --container-padding: 0.5in;
+    --base-font-size: 12pt;
+  }
+  
+  .interactive {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

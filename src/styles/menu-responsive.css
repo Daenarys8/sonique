@@ -1,0 +1,60 @@
+/* Menu and navigation responsive styles */
+.menu-container {
+  padding: calc(1rem * var(--scale-ratio));
+}
+
+.menu-item {
+  font-size: calc(1rem * var(--scale-ratio));
+  padding: calc(0.5rem * var(--scale-ratio));
+  margin-bottom: calc(0.5rem * var(--scale-ratio));
+}
+
+.menu-title {
+  font-size: calc(1.5rem * var(--scale-ratio));
+  margin-bottom: calc(1rem * var(--scale-ratio));
+}
+
+/* Navigation layout */
+.nav-container {
+  padding: calc(0.5rem * var(--scale-ratio));
+}
+
+.nav-item {
+  font-size: calc(0.9rem * var(--scale-ratio));
+  padding: calc(0.5rem * var(--scale-ratio));
+}
+
+/* Mobile menu */
+@media (max-width: 768px) {
+  .menu-container {
+    padding: calc(0.75rem * var(--scale-ratio));
+  }
+
+  .menu-item {
+    font-size: calc(0.95rem * var(--scale-ratio));
+    padding: calc(0.75rem * var(--scale-ratio));
+  }
+}
+
+/* Landscape mode */
+@media (max-width: 768px) and (orientation: landscape) {
+  .menu-container {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .menu-content {
+    padding-bottom: calc(2rem * var(--scale-ratio));
+  }
+}
+
+/* Touch optimizations */
+@media (hover: none) {
+  .menu-item:active {
+    transform: scale(0.98);
+  }
+
+  .nav-item:active {
+    opacity: 0.8;
+  }
+}

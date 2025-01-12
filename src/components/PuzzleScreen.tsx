@@ -2,6 +2,22 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { puzzleService } from '../services/puzzleService';
 import type { Puzzle } from '../types/puzzle';
 import './puzzlescreen.css';
+import './PuzzleScreen.css';
+import { GameContainer } from './GameContainer';
+import { useResponsive } from '../hooks/useResponsive';
+import { BattleScene } from './BattleScene';
+import { MODEL_PATHS, ANIMATION_DURATIONS } from '../constants/modelPaths';
+import { useAccessibility } from '../contexts/AccessibilityContext';
+import '../styles/model.css';
+import '../styles/game-responsive.css';
+import '../styles/fixes.css';
+import '../styles/base.css';
+import '../styles/animations.css';
+import '../styles/responsive.css';
+
+// Battle constants
+const CAST_GIF = '/effects/cast.gif';
+const SUFFER_GIF = '/effects/suffer.gif';
 
 // Update PuzzleScreen to handle sound
 interface PuzzleScreenProps {
@@ -11,6 +27,7 @@ interface PuzzleScreenProps {
   onBack: () => void;
   isGuestMode?: boolean;
   isSoundEnabled?: boolean;
+  isMobile?: boolean;
 }
 
 export function PuzzleScreen({
@@ -19,6 +36,7 @@ export function PuzzleScreen({
   onBack,
   isGuestMode = false,
   isSoundEnabled = true,
+  isMobile = false,
 }: PuzzleScreenProps) {
   const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
@@ -56,6 +74,7 @@ export function PuzzleScreen({
 
   // Reset puzzle state when moving to a new puzzle
   const resetPuzzleState = () => {
+    playSound('sonique');
     setUserAnswer('');
     setIsCorrect(null);
     setShowHint(false);
@@ -97,9 +116,13 @@ export function PuzzleScreen({
     const isAnswerCorrect = userAnswer.toLowerCase().trim() === currentPuzzle.correctAnswer.toLowerCase().trim();
     setIsCorrect(isAnswerCorrect);
 
+    // Play animation sequence based on answer correctness
+    playAnimationSequence(isAnswerCorrect);
+
     if (isAnswerCorrect) {
       const coins = calculateCoins(timeLeft, attempts);
-      playSound('success');
+      playSound('correct');
+      playSound('npccry');
 
       if (!isGuestMode) {
         await puzzleService.updateProgressWithRetry(currentPuzzle.category, coins);
@@ -115,7 +138,9 @@ export function PuzzleScreen({
         }
       }, 1500);
     } else {
-      playSound('error');
+      playSound('wrong');
+      playSound('grunt');
+      playSound('painhum');
       if (attempts >= 2 && !showHint) {
         setShowHint(true);
       }
@@ -138,9 +163,22 @@ export function PuzzleScreen({
   }, []);
 
   // Play sound for success or error
-  const playSound = useCallback((soundType: 'success' | 'error') => {
+  const SOUND_EFFECTS = {
+    hover: '/sounds/hover-chime.mp3',
+    select: '/sounds/select-chime.wav',
+    success: '/sounds/success-chime.mp3',
+    attack: '/sounds/attack.mp3',
+    correct: '/sounds/correct.mp3',
+    wrong: '/sounds/wrong.mp3',
+    sonique: '/sounds/sonique.mp3',
+    npccry: '/sounds/npccry.mp3',
+    painhum: '/sounds/painhum.mp3',
+    grunt: '/sounds/grunt.wav'
+  };
+
+  const playSound = useCallback((soundType: keyof typeof SOUND_EFFECTS) => {
     if (!isSoundEnabled) return;
-    const sound = new Audio(`/sounds/${soundType}.mp3`);
+    const sound = new Audio(SOUND_EFFECTS[soundType]);
     sound.play().catch(() => {});
   }, [isSoundEnabled]);
 
@@ -168,12 +206,60 @@ export function PuzzleScreen({
 
   const currentPuzzle = puzzles[currentPuzzleIndex];
 
+  const [playerState, setPlayerState] = useState({
+    currentAnimation: 0
+  });
+  
+  const [npcState, setNpcState] = useState({
+    currentAnimation: 0
+  });
+  
+  const [playerEffect, setPlayerEffect] = useState<string | null>(null);
+  const [npcEffect, setNpcEffect] = useState<string | null>(null);
+  const { highContrast, reducedMotion } = useAccessibility();
+
+  const handleModelsLoaded = useCallback(() => {
+    // Handle when 3D models are loaded
+    setLoading(false);
+  }, []);
+
+  // Animation sequence for correct/incorrect answers
+  const playAnimationSequence = useCallback((isCorrect: boolean) => {
+    if (isCorrect) {
+      setPlayerState({ currentAnimation: 1 }); // Attack
+      setNpcState({ currentAnimation: 2 }); // Get hit
+      setPlayerEffect('/effects/cast.gif');
+      setNpcEffect('/effects/suffer.gif');
+    } else {
+      setPlayerState({ currentAnimation: 2 }); // Get hit
+      setNpcState({ currentAnimation: 1 }); // Attack
+      setPlayerEffect('/effects/suffer.gif');
+      setNpcEffect('/effects/cast.gif');
+    }
+
+    // Reset after animation
+    setTimeout(() => {
+      setPlayerState({ currentAnimation: 0 });
+      setNpcState({ currentAnimation: 0 });
+      setPlayerEffect(null);
+      setNpcEffect(null);
+    }, ANIMATION_DURATIONS.ATTACK);
+  }, []);
+
   return (
-    <div className="puzzle-screen-container min-h-screen py-8 px-4 flex flex-col">
+    <GameContainer className={`puzzle-screen-container min-h-screen flex flex-col interactive ${isMobile ? 'mobile' : ''}`}>
+      <BattleScene
+        playerState={playerState}
+        npcState={npcState}
+        playerEffect={playerEffect}
+        npcEffect={npcEffect}
+        isMobile={isMobile}
+        onModelsLoaded={handleModelsLoaded}
+      />
       {/* Header Section */}
       <div className="container mx-auto mb-8">
         <div className="flex justify-between items-center">
-          <button onClick={onBack} className="game-button-primary">← Back</button>
+          <button onClick={onBack} onMouseEnter={() => playSound('hover')} className="game-button-primary">← Back</button>
           <div className={`timer-display ${timeLeft < 10 ? 'timer-warning' : ''}`}>
             <div className="timer-circle">
               <span className="timer-text">{timeLeft}</span>
@@ -183,8 +269,8 @@ export function PuzzleScreen({
       </div>
 
       {/* Main Puzzle Section */}
-      <div className="container mx-auto flex-1 flex items-start justify-center mt-4">
-        <div className="game-panel max-w-3xl w-full">
+      <div className="container mx-auto flex-1 px-4 sm:px-6 md:px-8 flex items-start justify-center mt-4 px-4 sm:px-6 lg:px-8">
+        <div className="game-panel max-w-screen-content w-full">
           <div className="space-y-6">
             <div className="panel-header text-center">
               <h2 className="text-2xl font-gaming text-white glow-text mb-6">
@@ -199,11 +285,12 @@ export function PuzzleScreen({
               </div>
 
               {/* Answer Options */}
-              <div className="options-grid grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="options-grid grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
                 {currentPuzzle?.options?.map((option, index) => (
                   <button
                     key={index}
                     onClick={() => handleOptionClick(option)}
+                    onMouseEnter={() => playSound('hover')}
                     className={`
                       option-button
                       p-4 rounded-lg
@@ -261,15 +348,16 @@ export function PuzzleScreen({
               {/* Submit Answer Button */}
               <button
                 onClick={handleSubmitAnswer}
+                onMouseEnter={() => playSound('attack')}
                 className="game-button-submit w-full mt-4"
                 disabled={!userAnswer.trim() || isSubmitting || timeLeft === 0}
               >
-                {isSubmitting ? <span className="loading-dots">Checking</span> : 'Submit Answer'}
+                {currentQuestionIndex >= 4 ? 'Finish Battle' : (isSubmitting ? <span className="loading-dots">Checking</span> : 'Submit Answer')}
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </GameContainer>
   );
 }

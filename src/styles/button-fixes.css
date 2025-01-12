@@ -1,0 +1,44 @@
+/* Button specific fixes */
+.start-button,
+.login-button,
+.guest-button {
+  @apply flex justify-center items-center;
+  min-width: 200px;
+  min-height: 44px;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+.button-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .button-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .start-button,
+  .login-button,
+  .guest-button {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (orientation: landscape) {
+  .button-container {
+    position: relative;
+    transform: none;
+    left: auto;
+    top: auto;
+    margin: 1rem auto;
+    flex-direction: row;
+  }
+}

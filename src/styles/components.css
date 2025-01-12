@@ -1,0 +1,44 @@
+/* Base responsive components */
+.base-container {
+  width: 100%;
+  max-width: var(--container-width, 1200px);
+  margin: 0 auto;
+  padding: var(--container-padding);
+}
+
+/* Landscape optimizations */
+@media (orientation: landscape) {
+  .base-container.landscape {
+    padding: calc(var(--container-padding) * 0.85);
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Touch targets */
+@media (hover: none) {
+  .interactive {
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .interactive:active {
+    transform: scale(0.98);
+  }
+}
+
+/* High contrast */
+@media (prefers-contrast: high) {
+  .base-container {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .base-container * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

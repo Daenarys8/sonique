@@ -1,0 +1,42 @@
+/* Model container responsive styles */
+.model-container {
+  @apply relative flex items-center justify-center;
+  height: 100%;
+  width: 100%;
+}
+
+.model-container canvas {
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .model-container canvas {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 768px) {
+  .model-container canvas {
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 640px) {
+  .model-container canvas {
+    transform: scale(0.7);
+  }
+}
+
+@media (max-width: 480px) {
+  .model-container canvas {
+    transform: scale(0.6);
+  }
+}
+
+@media (orientation: landscape) {
+  .model-container {
+    height: 80vh;
+  }
+}

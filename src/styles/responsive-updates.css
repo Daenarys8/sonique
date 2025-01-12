@@ -1,0 +1,131 @@
+/* Base responsive styles */
+:root {
+  --base-font-size: 16px;
+  --scale-ratio: 1;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --base-font-size: 14px;
+    --scale-ratio: 0.9;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --base-font-size: 12px;
+    --scale-ratio: 0.8;
+  }
+}
+
+/* Core container responsiveness */
+.responsive-container {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Button centering */
+.form-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  min-height: var(--min-touch-target);
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .responsive-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .responsive-container {
+    max-width: 100%;
+  }
+  
+  .form-button {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* Grid layout responsiveness */
+.category-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .category-grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .category-grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .battle-scene-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+  }
+  
+  .character-model-container {
+    flex: 1;
+    height: 100%;
+  }
+}
+
+/* Font scaling */
+.category-title {
+  font-size: calc(1.2rem * var(--scale-ratio));
+}
+
+.progress-text {
+  font-size: calc(0.9rem * var(--scale-ratio));
+}
+
+/* Model scaling */
+.character-model {
+  transform: scale(var(--scale-ratio));
+}
+
+/* Battle scene responsiveness */
+.battle-scene-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+/* Image responsiveness */
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Effect overlays */
+.effect-overlay {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}

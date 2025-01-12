@@ -1,0 +1,57 @@
+/* Base styles for futuristic messages */
+.futuristic-message {
+  font-size: clamp(0.5rem, 1.5vw, 0.75rem); /* Scale text size dynamically */
+  line-height: 1.4;
+  max-width: 90vw; /* Restrict width to 90% of the viewport */
+  margin: 0 auto;
+  padding: 0.5rem;
+  word-wrap: break-word; /* Force wrap if content is too long */
+  overflow-wrap: break-word; /* For compatibility */
+  text-align: center;
+  white-space: normal; /* Ensure text wraps */
+}
+
+/* Adjust for medium screens */
+@media (min-width: 768px) {
+  .futuristic-message {
+    font-size: clamp(0.75rem, 1vw, 1rem); /* Scale slightly larger */
+    max-width: 80vw; /* Narrower width */
+  }
+}
+
+/* Adjust for larger screens */
+@media (min-width: 1024px) {
+  .futuristic-message {
+    font-size: clamp(1rem, 0.8vw, 1.25rem); /* Adjust size for readability */
+    max-width: 60vw;
+  }
+}
+
+/* Loading text styles */
+.loading-text {
+  font-size: clamp(0.3rem, 1.5vw, 0.75rem); /* Similar scaling as above */
+  line-height: 1.4;
+  max-width: 90vw; /* Restrict width */
+  margin: 0 auto;
+  padding: 0.4rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
+  white-space: normal;
+}
+
+/* Adjust for medium screens */
+@media (min-width: 768px) {
+  .loading-text {
+    font-size: clamp(0.55rem, 1vw, 1rem); /* Slightly larger size */
+    max-width: 80vw;
+  }
+}
+
+/* Adjust for larger screens */
+@media (min-width: 1024px) {
+  .loading-text {
+    font-size: clamp(0.8rem, 0.8vw, 1.25rem); /* Larger size for big screens */
+    max-width: 60vw;
+  }
+}

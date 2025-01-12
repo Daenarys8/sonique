@@ -1,4 +1,44 @@
 @import './styles/title.css';
+@import './styles/app-responsive.css';
+@import './styles/shared-responsive.css';
+@import './styles/game-responsive.css';
+@import './styles/modal-responsive.css';
+@import './styles/battle-responsive.css';
+@import './styles/menu-responsive.css';
+@import './styles/components.css';
+
+:root {
+  --base-font-size: 16px;
+  --scale-ratio: 1;
+  --container-padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --base-font-size: 14px;
+    --scale-ratio: 0.9;
+    --container-padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --base-font-size: 12px;
+    --scale-ratio: 0.8;
+    --container-padding: 0.5rem;
+  }
+}
+
+html {
+  font-size: var(--base-font-size);
+}
+
+/* Core responsive container */
+.responsive-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
 
 /* Futuristic Background */
 .futuristic-bg {
@@ -95,3 +135,133 @@
 @tailwind components;
 @tailwind utilities;
 
+.high-contrast {
+  --text-color: #ffffff;
+  --background-color: #000000;
+  --primary-color: #ffffff;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* src/styles/accessibility.css or your global CSS */
+.high-contrast {
+  /* High contrast mode styles */
+  --text-color: #ffffff;
+  --background-color: #000000;
+  --primary-color: #ffffff;
+  --secondary-color: #ffffff;
+  
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+.high-contrast img {
+  filter: grayscale(100%) contrast(200%);
+}
+
+.high-contrast button,
+.high-contrast [role="button"] {
+  background-color: var(--text-color) !important;
+  color: var(--background-color) !important;
+  border: 2px solid var(--text-color) !important;
+}
+
+.high-contrast .question-container {
+  background-color: var(--background-color) !important;
+  border: 2px solid var(--text-color) !important;
+}
+
+/* Reduced motion styles */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Touch target sizes for better accessibility */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  .interactive {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+  }
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Prevent scrollbars unless necessary */
+}
+
+/* For mobile devices */
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* For tablets */
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+  body {
+    font-size: 16px;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}
+
+/* For larger screens (desktops) */
+@media only screen and (min-width: 1025px) {
+  body {
+    font-size: 18px;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* Portrait mode */
+@media (orientation: portrait) {
+  .game-container {
+    width: 100%;
+    height: 100vh;
+    /* Adjust styles for portrait mode */
+  }
+}
+
+/* Landscape mode */
+@media (orientation: landscape) {
+  .game-container {
+    width: 100vw;
+    height: 100vh;
+    /* Adjust styles for landscape mode */
+  }
+}

@@ -1,135 +1,108 @@
+/* Game Progress Container */
 .game-progress-container {
   background-image: url('/assets/ruins.jpg');
   background-size: cover;
   background-position: center;
-  min-height: 300px;
-}
-
-/* Level badge */
-.level-badge {
-  background: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  padding: 10px;
+  border-radius: clamp(8px, 1.5vw, 12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  min-height: clamp(200px, 35vh, 300px);
   position: relative;
-}
-
-.level-badge::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #ffd700, #ff6b6b, #4834d4);
-  opacity: 0.5;
-  animation: rotate 2s linear infinite;
-}
-
-/* Progress bar styling */
-.progress-section {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 16px;
-  padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.progress-bar-container {
-  position: relative;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
   overflow: hidden;
 }
 
-.progress-bar-background {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.1) 0,
-    rgba(255, 255, 255, 0.1) 10px,
-    rgba(255, 255, 255, 0.2) 10px,
-    rgba(255, 255, 255, 0.2) 20px
-  );
+/* Level Badge */
+.level-badge {
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: clamp(4px, 0.8vw, 8px);
+  border-radius: 50%;
+}
+
+.level-badge svg {
+  animation: pulse 2s infinite;
+}
+
+/* Level Title */
+.level-title {
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+/* Progress Section */
+.progress-section {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: clamp(4px, 1vw, 6px);
+  padding: clamp(6px, 1.2vw, 10px);
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  position: relative;
+  width: 100%;
+  height: clamp(6px, 1vh, 8px);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: clamp(4px, 0.8vw, 6px);
+  overflow: hidden;
 }
 
 .progress-bar-fill {
-  position: absolute;
   height: 100%;
   background: linear-gradient(90deg, #4834d4, #686de0);
-  border-radius: 10px;
-  transition: width 0.5s ease;
-  box-shadow: 0 0 20px rgba(72, 52, 212, 0.6);
+  border-radius: inherit;
+  transition: width 0.3s ease;
 }
 
+/* Markers */
 .progress-markers {
-  position: absolute;
-  inset: 0;
   display: flex;
   justify-content: space-between;
-  padding: 0 10px;
-  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  inset: 0;
 }
 
 .marker {
   width: 2px;
-  height: 100%;
+  height: 40%;
   background: rgba(255, 255, 255, 0.2);
-  transition: background-color 0.3s ease;
 }
 
 .marker.active {
   background: rgba(255, 255, 255, 0.8);
 }
 
-/* Stats styling */
+/* Stats Container */
 .stats-container {
   display: flex;
-  justify-content: space-around;
-  gap: 1rem;
+  justify-content: space-between;
+  gap: clamp(8px, 2vw, 12px);
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: clamp(4px, 1vw, 8px);
+  padding: clamp(4px, 1vw, 8px);
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: clamp(4px, 1vw, 6px);
 }
 
-/* Text effects */
+.stat-icon {
+  width: clamp(16px, 2vw, 20px);
+  height: clamp(16px, 2vw, 20px);
+}
+
+/* Glow Effect */
 .glow-text {
-  text-shadow: 0 0 10px currentColor,
-               0 0 20px currentColor,
-               0 0 30px currentColor;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
 }
 
-/* Animations */
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
+/* Keyframes */
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.7; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-/* Hover effects */
-.stat-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-/* Progress bar animation */
-@keyframes progressStripes {
-  0% { background-position: 0 0; }
-  100% { background-position: 50px 0; }
-}
-
-.progress-bar-background {
-  animation: progressStripes 2s linear infinite;
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
