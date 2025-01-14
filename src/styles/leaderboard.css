@@ -1,0 +1,173 @@
+/* Leaderboard Container */
+.leaderboard-container {
+    background-image: url('/assets/leaderboard-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    width: 100%; /* Full width */
+    max-width: clamp(300px, 60vw, 600px); /* Dynamically clamps the width of the container */
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+    padding: clamp(1rem, 4vw, 2rem); /* Clamping padding to scale with viewport */
+  }
+  
+  /* Background overlay */
+  .leaderboard-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    z-index: -1;
+  }
+  
+  /* Header */
+  .leaderboard-header {
+    padding: clamp(1rem, 4vw, 2rem); /* Dynamic padding for header */
+    background: inherit;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 2vw, 1rem); /* Gap between elements scales with screen size */
+  }
+  
+  /* Leaderboard Entries */
+  .leaderboard-entries {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 2vw, 1rem); /* Space between leaderboard entries */
+  }
+  
+  /* Leaderboard Entry */
+  .leaderboard-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(1rem, 3vw, 1.5rem); /* Clamping padding for responsive entry */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    min-width: 100%; /* Full width */
+  }
+  
+  .leaderboard-entry:hover {
+    transform: translateX(8px);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Rank Badge */
+  .rank-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(2rem, 8vw, 3rem); /* Dynamic width of rank badge */
+    height: clamp(2rem, 8vw, 3rem); /* Dynamic height of rank badge */
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Rank icon size */
+  .rank-icon {
+    width: clamp(1.5rem, 5vw, 2rem); /* Clamping icon size */
+    height: clamp(1.5rem, 5vw, 2rem); /* Clamping icon size */
+  }
+  
+  .rank-number {
+    font-size: clamp(1.5rem, 4vw, 2rem); /* Adjust rank number dynamically */
+  }
+  
+  /* Username styles */
+  .username {
+    font-size: clamp(1.2rem, 5vw, 1.5rem); /* Dynamic font size */
+    min-width: clamp(8rem, 20vw, 12rem); /* Ensures username doesn't shrink too much */
+  }
+  
+  /* Score and Coins badges */
+  .score-badge,
+  .coins-badge {
+    padding: clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 4vw, 1.5rem); /* Dynamic padding */
+    border-radius: 20px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+  
+  .score-badge {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+  }
+  
+  .coins-badge {
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Scrollable content */
+  .leaderboard-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: clamp(1rem, 4vw, 1.5rem);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+  
+  .leaderboard-content::-webkit-scrollbar {
+    width: clamp(4px, 2vw, 8px); /* Dynamic scrollbar size */
+  }
+  
+  .leaderboard-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .leaderboard-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+  
+  /* Leaderboard Entry Background for Top 3 */
+  .leaderboard-entry:nth-child(1) {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.1));
+    border-color: rgba(255, 215, 0, 0.3);
+  }
+  
+  .leaderboard-entry:nth-child(2) {
+    background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(255, 255, 255, 0.1));
+  }
+  
+  .leaderboard-entry:nth-child(3) {
+    background: linear-gradient(135deg, rgba(205, 127, 50, 0.1), rgba(255, 255, 255, 0.1));
+  }
+  
+  /* Font-Family for Gaming */
+  .font-gaming {
+    font-family: 'Gaming', sans-serif;
+  }
+  
+  @font-face {
+    font-family: 'Gaming';
+    src: url('/fonts/your-gaming-font.woff2') format('woff2');
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  /* Title (h2) styling with clamp() */
+  .leaderboard-title {
+    font-size: clamp(1.5rem, 4vw, 2rem); /* Dynamically adjust font size for the title */
+  }
+  

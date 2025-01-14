@@ -1,7 +1,7 @@
 import React from 'react';
 import { Star, Gamepad2, Trophy, Heart } from 'lucide-react';
 import type { UserProfile } from '../types/game';
-import './gameprogress.css';
+import '../styles/gameprogress.css';
 
 type GameProgressProps = {
   profile: UserProfile;

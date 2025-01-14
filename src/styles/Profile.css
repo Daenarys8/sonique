@@ -1,0 +1,231 @@
+/* Importing the Orbitron font */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+/* Profile Modal Styles */
+.profile-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.profile-content {
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  width: 24rem; /* Equivalent to w-96 */
+  border: 1px solid rgba(75, 0, 130, 0.3);
+  box-shadow: 0 4px 20px rgba(75, 0, 130, 0.2);
+  max-height: clamp(400px, 80vh, 600px);
+  overflow-y: auto;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.profile-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.25rem, 2vw, 2rem);
+  font-weight: bold;
+  color: white;
+}
+
+.profile-header button {
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s ease;
+}
+
+.profile-header button:hover {
+  color: white;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-info img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+
+.profile-info h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  font-weight: 600;
+  color: #333;
+}
+
+.profile-info p {
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  color: #666;
+}
+
+.profile-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(75, 0, 130, 0.3);
+}
+
+.profile-stat span {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  color: #333;
+}
+
+.profile-stat span:last-child {
+  color: white;
+}
+
+.profile-cta-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.profile-cta-buttons button {
+  padding: clamp(0.75rem, 3vw, 1rem);
+  border-radius: 0.375rem;
+  transition: background-color 0.3s ease;
+}
+
+.profile-cta-buttons .sign-up-button {
+  background-color: #4c6ef5;
+  color: white;
+}
+
+.profile-cta-buttons .sign-up-button:hover {
+  background-color: #3b5bbf;
+}
+
+.profile-cta-buttons .login-button {
+  background-color: #7c4dff;
+  color: white;
+}
+
+.profile-cta-buttons .login-button:hover {
+  background-color: #5f3bbf;
+}
+
+.profile-logout-button {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.75rem 0;
+  background-color: #f44336;
+  color: white;
+  border-radius: 0.375rem;
+  transition: background-color 0.3s ease;
+}
+
+.profile-logout-button:hover {
+  background-color: #d32f2f;
+}
+
+.profile-logout-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profile-guest-warning {
+  background-color: rgba(255, 193, 7, 0.5);
+  padding: 1rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-guest-warning p {
+  color: #fbc02d;
+}
+
+.profile-guest-warning ul {
+  list-style-type: disc;
+  padding-left: 1rem;
+}
+
+.profile-guest-warning ul li {
+  color: #fdd835;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .profile-content {
+    width: 90%;
+    max-height: 90vh;
+  }
+
+  .profile-title {
+    font-size: 1.5rem;
+  }
+
+  .profile-info h2 {
+    font-size: 1.1rem;
+  }
+
+  .profile-info p {
+    font-size: 0.875rem;
+  }
+
+  .profile-cta-buttons button {
+    padding: 0.75rem;
+  }
+
+  .profile-logout-button {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-content {
+    width: 95%;
+    max-height: 80vh;
+  }
+
+  .profile-title {
+    font-size: 1.25rem;
+  }
+
+  .profile-info h2 {
+    font-size: 1rem;
+  }
+
+  .profile-info p {
+    font-size: 0.75rem;
+  }
+
+  .profile-cta-buttons button {
+    padding: 0.5rem;
+  }
+
+  .profile-logout-button {
+    padding: 1rem;
+  }
+}

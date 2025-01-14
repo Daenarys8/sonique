@@ -1,0 +1,189 @@
+.settings-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .settings-container {
+    background-color: rgba(0, 0, 0, 0.90);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 24rem;
+    max-height: clamp(350px, 80vh, 600px); /* More aggressive clamp for small devices */
+    overflow-y: auto;
+    border: 1px solid rgba(75, 75, 163, 0.3);
+    box-shadow: 0 4px 20px rgba(75, 75, 163, 0.2);
+  }
+  
+  .settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: clamp(1rem, 2vw, 1.5rem); /* Adjusted clamp for responsive spacing */
+  }
+  
+  .settings-title {
+    font-size: clamp(1rem, 4vw, 2rem); /* More responsive font size for small screens */
+    font-weight: bold;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+  }
+  
+  .settings-close-btn {
+    color: rgba(255, 255, 255, 0.6);
+    transition: color 0.3s ease;
+  }
+  
+  .settings-close-btn:hover {
+    color: white;
+  }
+  
+  .settings-options {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2vw, 1.5rem); /* More responsive gap */
+  }
+  
+  .sound-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .sound-description {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sound-label {
+    display: flex;
+    align-items: center;
+    font-size: clamp(0.75rem, 2.5vw, 1rem); /* More aggressive clamp for small devices */
+    color: white;
+    font-family: 'Tech Mono', monospace;
+  }
+  
+  .sound-status {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: clamp(0.625rem, 1.8vw, 0.875rem); /* Adjusted for small devices */
+  }
+  
+  .sound-toggle-btn {
+    padding: 0.5rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+  }
+  
+  .sound-toggle-btn.enabled {
+    background-color: rgba(75, 0, 130, 0.5);
+    color: white;
+  }
+  
+  .sound-toggle-btn.disabled {
+    background-color: rgba(50, 50, 50, 0.5);
+    color: rgba(150, 150, 150, 0.6);
+  }
+  
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(75, 0, 130, 0.3), transparent);
+  }
+  
+  .volume-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .volume-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .volume-label {
+    display: flex;
+    align-items: center;
+    font-size: clamp(0.75rem, 2.5vw, 1rem); /* Adjusted for better small screen support */
+    color: white;
+    font-family: 'Tech Mono', monospace;
+  }
+  
+  .volume-value {
+    font-size: clamp(0.625rem, 1.8vw, 0.875rem); /* More responsive font size */
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .volume-slider {
+    width: 100%;
+    height: 2px;
+    background-color: rgba(50, 50, 50, 0.5);
+    accent-color: indigo;
+    border-radius: 5px;
+  }
+  
+  .settings-footer {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: clamp(1rem, 2vw, 1.5rem); /* Responsive footer button gap */
+  }
+  
+  .cancel-btn {
+    flex: 1;
+    padding: clamp(0.75rem, 2vw, 1rem);
+    background-color: rgba(50, 50, 50, 0.8);
+    color: rgba(200, 200, 200, 1);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(75, 75, 75, 0.3);
+    transition: all 0.2s ease;
+  }
+  
+  .cancel-btn:hover {
+    background-color: rgba(60, 60, 60, 0.8);
+  }
+  
+  .save-btn {
+    flex: 2;
+    padding: clamp(0.75rem, 2vw, 1rem);
+    background-color: rgba(75, 0, 130, 0.8);
+    color: white;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(75, 0, 130, 0.3);
+    transition: all 0.2s ease;
+  }
+  
+  .save-btn:hover {
+    background-color: rgba(75, 0, 130, 0.7);
+  }
+  
+  .saving-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .saving-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  

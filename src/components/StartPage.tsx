@@ -89,14 +89,15 @@ export function StartPage() {
 
       return (
         <div 
-        className="start-page-container"
+        className="loading-container min-h-screen flex flex-col justify-center items-center relative"
         >
+          <div className="absolute inset-0 bg-black/40" />
           {/* Content wrapper */}
-          <div className="relative z-10 flex flex-col items-center flex-1">
+          <div className="relative z-10 text-center px-4 sm:px-6 md:px-8 w-full max-w-4xl mx-auto">
             {/* Title and Message Section */}
-            <div className="mb-6 w-full max-w-2xl"> {/* Adjusted margin here */}
+            <div className=""> {/* Adjusted margin here */}
               <div className="animate-bounce -mb-3 text-center">
-                <div className="text-3xl sm:text-4xl font-['Press_Start_2P'] text-white">
+                <div className="">
                   {renderTitle()}
                 </div>
               </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trophy, Crown, Medal } from 'lucide-react';
 import type { LeaderboardEntry } from '../types/game';
-import './leaderboard.css';
+import '../styles/leaderboard.css';
 
 const mockLeaderboard: LeaderboardEntry[] = [
   { rank: 1, username: "BrainMaster", score: 1200, coins: 5000 },
@@ -12,13 +12,13 @@ const mockLeaderboard: LeaderboardEntry[] = [
 const getRankIcon = (rank: number) => {
   switch (rank) {
     case 1:
-      return <Crown className="w-6 h-6 text-yellow-400 animate-pulse" />;
+      return <Crown className="rank-icon" />;
     case 2:
-      return <Medal className="w-6 h-6 text-gray-400" />;
+      return <Medal className="rank-icon" />;
     case 3:
-      return <Medal className="w-6 h-6 text-amber-600" />;
+      return <Medal className="rank-icon" />;
     default:
-      return <span className="font-bold text-lg">{rank}</span>;
+      return <span className="rank-number">{rank}</span>;
   }
 };
 
@@ -32,9 +32,9 @@ export function Leaderboard() {
       <div className="relative z-10 p-6 pb-0">
         <div className="flex items-center gap-3 mb-6">
           <div className="trophy-icon-wrapper">
-            <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
+            <Trophy className="trophy-icon" />
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-wider font-gaming">
+          <h2 className="leaderboard-title font-bold text-white tracking-wider font-gaming">
             Leaderboard
           </h2>
         </div>
@@ -54,7 +54,7 @@ export function Leaderboard() {
                 <div className="rank-badge flex-shrink-0">
                   {getRankIcon(entry.rank)}
                 </div>
-                <span className="font-gaming text-white text-lg min-w-[120px]">
+                <span className="font-gaming text-white username">
                   {entry.username}
                 </span>
               </div>

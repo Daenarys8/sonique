@@ -1,0 +1,111 @@
+/* Header container */
+.header-container {
+    background-image: url('/assets/header2.jpg'); /* Replace with your image path */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    padding: clamp(1rem, 2vw, 2.5rem) clamp(1rem, 2vw, 3rem); /* Clamped padding */
+    height: clamp(300px, 40vh, 600px); /* Ensure header height is responsive */
+  }
+  
+  /* Background overlay */
+  .bg-gradient-overlay {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.8) 100%);
+    z-index: -1;
+  }
+  
+  /* Header content */
+  .header-content {
+    max-width: clamp(320px, 90vw, 1200px); /* Clamped max width for content */
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(1rem, 2vw, 2.5rem); /* Clamped gap between elements */
+    height: 100%; /* Make sure content fills the header */
+  }
+  
+  /* Title styling */
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1vw, 1.5rem); /* Clamped gap between title parts */
+    font-size: clamp(1rem, 3vw, 1.5rem); /* Clamped font size */
+  }
+  
+  /* Futuristic title colors */
+  .futuristic-title-green {
+    text-shadow: 0 0 clamp(8px, 1vw, 10px) rgba(74, 222, 128, 0.5), 0 0 clamp(16px, 2vw, 20px) rgba(74, 222, 128, 0.3);
+    color: #4ade80;
+  }
+  
+  .futuristic-title-orange {
+    text-shadow: 0 0 clamp(8px, 1vw, 10px) rgba(249, 115, 22, 0.5), 0 0 clamp(16px, 2vw, 20px) rgba(249, 115, 22, 0.3);
+    color: #f97316;
+  }
+  
+  /* Action buttons container */
+  .action-buttons {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1vw, 1.5rem); /* Clamped gap between action buttons */
+  }
+  
+  /* Coins container */
+  .coins-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: clamp(0.5rem, 1vw, 1rem); /* Clamped padding */
+    font-size: clamp(0.875rem, 1.2vw, 1rem); /* Clamped font size for coins */
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50rem;
+  }
+  
+  /* Settings button and profile button styling */
+  .settings-button,
+  .profile-button {
+    padding: clamp(0.5rem, 1vw, 1rem); /* Clamped padding for buttons */
+    background: transparent;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: transform 0.3s ease, background 0.3s ease;
+    display: flex;
+    align-items: center; /* Align icons and badges vertically */
+    justify-content: center; /* Center content inside the button */
+  }
+  
+  /* Button hover effects */
+  .settings-button:hover,
+  .profile-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+  
+  .settings-button:active,
+  .profile-button:active {
+    transform: scale(0.95);
+  }
+  
+  /* Icon styling */
+  .icon {
+    width: clamp(1rem, 2vw, 1.25rem); /* Clamped icon width */
+    height: clamp(1rem, 2vw, 1.25rem); /* Clamped icon height */
+  }
+  
+  /* Guest badge styling */
+  .guest-badge {
+    font-size: clamp(0.75rem, 1vw, 0.875rem); /* Clamped font size for badge */
+    padding: clamp(0.25rem, 0.5vw, 0.5rem); /* Clamped padding for badge */
+    background-color: #facc15; /* Bright yellow */
+    color: #000;
+    font-weight: bold;
+    border-radius: clamp(0.25rem, 0.5vw, 0.5rem); /* Clamped border radius */
+    margin-left: 0.5rem;
+    align-self: center; /* Vertically align the badge with the button */
+  }
+  
