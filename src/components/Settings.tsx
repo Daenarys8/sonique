@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Volume2, VolumeX, X, Music, Gamepad } from 'lucide-react';
+import '../styles/settings.css'; // Updated CSS file import
 
 type SettingsProps = {
   isSoundEnabled: boolean;
@@ -35,78 +36,48 @@ export function Settings({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn motion-reduce:animate-none">
-      <div 
-        className="bg-black/90 rounded-lg p-6 w-96 border border-indigo-500/30 shadow-lg shadow-indigo-500/20"
-        style={{
-          maxHeight: 'clamp(400px, 80vh, 600px)', // Apply clamp for max height
-          overflowY: 'auto', // Enable scrolling when content exceeds max height
-        }}
-      >
+    <div className="settings-overlay">
+      <div className="settings-container">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 
-            className="text-2xl font-bold text-white font-orbitron"
-            style={{ fontSize: 'clamp(1.25rem, 2vw, 2rem)' }} // Apply clamp for font size
-          >
-            Settings
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-            aria-label="Close settings"
-          >
+        <div className="settings-header">
+          <h2 className="settings-title">Settings</h2>
+          <button onClick={onClose} className="settings-close-btn" aria-label="Close settings">
             <X size={24} />
           </button>
         </div>
         
         {/* Settings Options */}
-        <div className="space-y-6">
+        <div className="settings-options">
           {/* Master Sound Control */}
-          <div className="flex items-center justify-between group">
-            <div className="space-y-1">
-              <span 
-                className="text-white font-tech-mono flex items-center gap-2"
-                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
-              >
+          <div className="sound-control group">
+            <div className="sound-description">
+              <span className="sound-label">
                 <Gamepad size={20} />
                 Master Sound
               </span>
-              <p 
-                className="text-gray-400 text-sm"
-                style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)' }} // Apply clamp for font size
-              >
+              <p className="sound-status">
                 {isSoundEnabled ? 'Game audio is enabled' : 'Game audio is disabled'}
               </p>
             </div>
             <button
               onClick={onToggleSound}
-              className={`p-2 rounded-full transition-all duration-200 
-                ${isSoundEnabled 
-                  ? 'bg-indigo-600/50 text-white hover:bg-indigo-500/50' 
-                  : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50'}`}
+              className={`sound-toggle-btn ${isSoundEnabled ? 'enabled' : 'disabled'}`}
               aria-label={isSoundEnabled ? 'Disable sound' : 'Enable sound'}
             >
               {isSoundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
             </button>
           </div>
 
-          <div className="h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+          <div className="divider" />
 
           {/* Music Volume */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span 
-                className="text-white font-tech-mono flex items-center gap-2"
-                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
-              >
+          <div className="volume-control">
+            <div className="volume-header">
+              <span className="volume-label">
                 <Music size={20} />
                 Music Volume
               </span>
-              <span 
-                className="text-gray-400 text-sm font-mono"
-                style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)' }} // Apply clamp for font size
-              >
+              <span className="volume-value">
                 {musicVolume}%
               </span>
             </div>
@@ -116,26 +87,19 @@ export function Settings({
               max="100" 
               value={musicVolume}
               onChange={(e) => setMusicVolume(Number(e.target.value))}
-              className="w-full accent-indigo-500 bg-gray-700/50 h-2 rounded-lg appearance-none 
-                cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="volume-slider"
               disabled={!isSoundEnabled}
             />
           </div>
 
           {/* Sound Effects Volume */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span 
-                className="text-white font-tech-mono flex items-center gap-2"
-                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
-              >
+          <div className="volume-control">
+            <div className="volume-header">
+              <span className="volume-label">
                 <Volume2 size={20} />
                 Effects Volume
               </span>
-              <span 
-                className="text-gray-400 text-sm font-mono"
-                style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)' }} // Apply clamp for font size
-              >
+              <span className="volume-value">
                 {effectsVolume}%
               </span>
             </div>
@@ -145,42 +109,31 @@ export function Settings({
               max="100" 
               value={effectsVolume}
               onChange={(e) => setEffectsVolume(Number(e.target.value))}
-              className="w-full accent-indigo-500 bg-gray-700/50 h-2 rounded-lg appearance-none 
-                cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="volume-slider"
               disabled={!isSoundEnabled}
             />
           </div>
 
-          <div className="h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+          <div className="divider" />
         </div>
 
         {/* Footer */}
-        <div className="mt-6 flex gap-3">
+        <div className="settings-footer">
           <button
             onClick={onClose}
-            className="w-1/3 py-2.5 bg-gray-800/80 text-gray-300 rounded-lg 
-              hover:bg-gray-700/80 transition-all duration-200 font-tech-mono
-              border border-gray-600/30 hover:border-gray-500/30
-              focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:ring-offset-2 
-              focus:ring-offset-black/90 transform hover:scale-[1.02]"
-            style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
+            className="cancel-btn"
+            style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Clamped font size
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-2/3 py-2.5 bg-indigo-600/80 text-white rounded-lg 
-              hover:bg-indigo-500/80 transition-all duration-200 font-tech-mono
-              border border-indigo-400/30 hover:border-indigo-300/30
-              focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 
-              focus:ring-offset-black/90 transform hover:scale-[1.02]
-              disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }} // Apply clamp for font size
+            className="save-btn"
           >
             {isSaving ? (
-              <span className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="saving-indicator">
+                <div className="saving-spinner" />
                 Saving...
               </span>
             ) : (

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useResponsive } from '../hooks/useResponsive';
 import type { Category } from '../types/game';
-import './CategoryGrid.css';
+import '../styles/CategoryGrid.css';
 
 const categories: Category[] = [
   { id: 'literature', name: 'Virellia', progress: 0, totalPuzzles: 10000, backgroundImage: '/assets/literature.jpg' },

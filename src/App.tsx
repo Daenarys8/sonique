@@ -1,106 +1,14 @@
-import React, { useState, useCallback, createContext, useContext } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Routes, Route} from 'react-router-dom';
 import { useAuth, AuthProvider } from './contexts/AuthContext';
-import { Header } from './components/Header';
-import { CategoryGrid } from './components/CategoryGrid';
-import { Leaderboard } from './components/Leaderboard';
-import { GameProgress } from './components/GameProgress';
-import { useGameState } from './hooks/useGameState';
-import type { Category } from './types/game';
-import { AuthenticationScreen } from './components/AuthenticationScreen';
 import { GameProvider } from './contexts/GameContext';
-import { useGame } from './contexts/GameContext';
 import { SkipLink } from './components/SkipLink';
-import { PuzzleScreen } from './components/PuzzleScreen';
 import { LoadingPage } from './components/LoadingPage';
-import { Settings } from './components/Settings';
-import { SignupForm } from './components/SignupForm';
-import { ConfirmSignup } from './components/ConfirmSignup';
-import { StartPage } from './components/StartPage';
-import { Profile } from './components/Profile';
-import GuestGame from './components/GuestGame';
 import { PublicRoute } from './components/PublicRoute';
 import { PrivateRoute } from './components/PrivateRoute';
 import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
 import  ErrorBoundary  from './components/ErrorBoundary';
 import './index.css';
-
-// Remove unused SoundContext
-
-function GameLayout({ children }: { children: (props: { isSoundEnabled: boolean, toggleSound: () => void }) => React.ReactNode }) {
-  const { userProfile } = useGameState();
-  const {
-    isSoundEnabled,
-    showSettings,
-    showProfile,
-    toggleSound,
-    handleSettingsClick,
-    handleProfileClick,
-    handleSettingsClose,
-    handleProfileClose
-  } = useGame();
-
-  return (
-    <>
-      <Header
-        coins={userProfile.stats.totalCoins}
-        onSettingsClick={handleSettingsClick}
-        onProfileClick={handleProfileClick}
-      />
-      {children({ isSoundEnabled, toggleSound })}
-      {showSettings && (
-        <Settings
-          isSoundEnabled={isSoundEnabled}
-          onToggleSound={toggleSound}
-          onClose={handleSettingsClose}
-        />
-      )}
-      {showProfile && (
-        <Profile onClose={handleProfileClose} />
-      )}
-    </>
-  );
-}
-
-function GameContent() {
-  const { userProfile, updateCoins, completeCategory } = useGameState();
-  const { 
-    selectedCategory,
-    isSoundEnabled,
-    handleCategorySelect,
-    handleCategoryClear
-  } = useGame();
-  const [hp, setHp] = useState(4);
-
-  const handlePuzzleComplete = useCallback((coinsEarned: number) => {
-    if (selectedCategory && 'id' in selectedCategory && 'name' in selectedCategory && 'icon' in selectedCategory) {
-      updateCoins(coinsEarned);
-      completeCategory(selectedCategory);
-      handleCategoryClear();
-    }
-  }, [selectedCategory, updateCoins, completeCategory, handleCategoryClear]);
-
-  return selectedCategory ? (
-    <PuzzleScreen
-      categoryId={selectedCategory?.id}
-      onComplete={handlePuzzleComplete}
-      onBack={handleCategoryClear}
-      isSoundEnabled={isSoundEnabled}
-    />
-  ) : (
-    <main id="main-content" className="max-w-7xl mx-auto py-8 px-4 relative z-10" role="main">
-      <div className="grid md:grid-cols-3 gap-8">
-        <div className="md:col-span-2">
-          <GameProgress profile={userProfile} hp={hp} />
-          <CategoryGrid onCategorySelect={handleCategorySelect} />
-        </div>
-        <div>
-          <Leaderboard />
-        </div>
-      </div>
-    </main>
-  );
-}
 
 const BackgroundContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { reducedMotion, highContrast } = useAccessibility();
@@ -200,9 +108,7 @@ function AppRoutes() {
             path="/game" 
             element={
               <PrivateRoute>
-                 <GameLayout>
-                {() => <GameContent />}
-              </GameLayout>
+                <GameMainPage />
               </PrivateRoute>
             } 
           />

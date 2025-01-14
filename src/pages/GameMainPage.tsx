@@ -8,6 +8,7 @@ import { useGame } from '../contexts/GameContext';
 import { PuzzleScreen } from '../components/PuzzleScreen';
 import { Settings } from '../components/Settings';
 import { Profile } from '../components/Profile';
+import '../styles/GuestGame.css';
 
 function GameLayout({ children }: { children: (props: { isSoundEnabled: boolean, toggleSound: () => void }) => React.ReactNode }) {
   const { userProfile } = useGameState();
@@ -28,9 +29,6 @@ function GameLayout({ children }: { children: (props: { isSoundEnabled: boolean,
         coins={userProfile.stats.totalCoins}
         onSettingsClick={handleSettingsClick}
         onProfileClick={handleProfileClick}
-        style={{
-          fontSize: 'clamp(1.25rem, 2vw, 2rem)', // Clamp for the header font size
-        }}
       />
       {children({ isSoundEnabled, toggleSound })}
       {showSettings && (
@@ -103,12 +101,7 @@ const GameMainPage: React.FC = () => {
   return (
     <main 
       id="main-content" 
-      className="max-w-7xl mx-auto py-8 px-4 relative z-10" 
       role="main"
-      style={{
-        maxWidth: 'clamp(300px, 80vw, 1200px)', // Clamping max width
-        padding: 'clamp(1rem, 2vw, 2.5rem)', // Clamping padding for the main content
-      }}
     >
         <GameLayout>
           {() => <GameContent />}

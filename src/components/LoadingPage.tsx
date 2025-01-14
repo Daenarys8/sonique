@@ -139,10 +139,10 @@ export function LoadingPage({ onLoadComplete }: LoadingPageProps) {
     };
 
     if (currentStep === 1) {
-      // Play speech after the 5-second delay, at the second step
+      // Play speech after the 2-second delay, at the second step
       setTimeout(() => {
         playSpeech();
-      }, 5000); // Wait 5 seconds before playing speech
+      }, 2000); // Wait 2 seconds before playing speech
     }
   }, [isSoundEnabled, isSpeechLoaded, currentStep]);
 

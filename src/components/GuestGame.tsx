@@ -12,7 +12,7 @@ import { MODEL_PATHS, ANIMATION_DURATIONS } from '../constants/modelPaths';
 import { Character3D } from './Character3D'
 import { SoundManager } from './CategoryGrid';
 import { useAccessibility } from '../contexts/AccessibilityContext';
-import './GuestGame.css';
+import '../styles/GuestGame.css';
 import '../index.css';
 import '../styles/model.css';
 import '../styles/fixes.css';
@@ -475,24 +475,19 @@ export function GuestGame() {
     
         {/* Right Model */}
         <div
-          className="model-container right-model"
           style={{
             position: 'absolute',
             top: 0,
             right: 0,
-            pointerEvents: 'none',
-            zIndex: 1,
+            height: '100%',
+            width: '50%', // Right half of the screen
+            pointerEvents: 'none', // Prevents interfering with UI interactions
             transition: reducedMotion ? 'none' : 'all 0.3s ease',
             filter: highContrast ? 'grayscale(100%) contrast(200%)' : 'none'
           }}
         >
-          <div className="model-container-wrapper" role="img" aria-label="Enemy character model">
             <Canvas 
-              camera={{ 
-                position: [5, 2, 5], 
-                fov: isMobile ? 60 : 50 
-              }}
-              style={{ opacity: isLoading ? 0.5 : 1 }}
+              camera={{ position: [5, 2, 5], fov: 50 }}
             >
               <ambientLight intensity={0.5} />
               <directionalLight position={[-10, 10, 5]} intensity={10} />
@@ -500,43 +495,30 @@ export function GuestGame() {
                 modelPath={MODEL_PATHS.NPC.BASE.model}
                 animationPaths={MODEL_PATHS.NPC.BASE.animations}
                 position={[2, -2, 0]}
-                scale={isMobile ? 0.015 : 0.02}
+                scale={0.02}
                 rotation={[0, -Math.PI / 0.25, 0]}
                 currentAnimation={npcState.currentAnimation}
               />
               <Environment preset="park" />
             </Canvas>
-            <div className="model-fallback" role="alert">
-              <p>Unable to display 3D model</p>
-              <p>Character is {npcState.currentAnimation === 0 ? 'idle' : 
-                npcState.currentAnimation === 1 ? 'attacking' : 
-                npcState.currentAnimation === 2 ? 'being hit' : 
-                'celebrating victory'}</p>
-            </div>
           </div>
-        </div>
     
         {/* Left Model */}
         <div
-          className="model-container left-model"
           aria-hidden="true"
           style={{
             position: 'absolute',
             top: 0,
-            left: 0,
-            pointerEvents: 'none',
-            zIndex: 1,
+            right: 0,
+            height: '100%',
+            width: '50%', // Right half of the screen
+            pointerEvents: 'none', // Prevents interfering with UI interactions
             transition: reducedMotion ? 'none' : 'all 0.3s ease',
             filter: highContrast ? 'grayscale(100%) contrast(200%)' : 'none'
           }}
         >
-          <div className="model-container-wrapper" role="img" aria-label="Player character model">
             <Canvas 
-              camera={{ 
-                position: [-5, 2, 5], 
-                fov: isMobile ? 60 : 50 
-              }}
-              style={{ opacity: isLoading ? 0.5 : 1 }}
+              camera={{ position: [-5, 2, 5], fov: 50 }}
             >
               <ambientLight intensity={0.5} />
               <directionalLight position={[10, 10, 5]} intensity={7} />
@@ -544,21 +526,13 @@ export function GuestGame() {
                 modelPath={MODEL_PATHS.PLAYER.BASE.model}
                 animationPaths={MODEL_PATHS.PLAYER.BASE.animations}
                 position={[-2, -2, 0]}
-                scale={isMobile ? 0.015 : 0.02}
+                scale={0.02}
                 rotation={[0, Math.PI / 0.5, 0]}
                 currentAnimation={playerState.currentAnimation}
               />
               <Environment preset="park" />
             </Canvas>
-            <div className="model-fallback" role="alert">
-              <p>Unable to display 3D model</p>
-              <p>Character is {playerState.currentAnimation === 0 ? 'idle' : 
-                playerState.currentAnimation === 1 ? 'attacking' : 
-                playerState.currentAnimation === 2 ? 'being hit' : 
-                'defeated'}</p>
-            </div>
           </div>
-        </div>
     
         {/* Buttons Section */}
         <div
