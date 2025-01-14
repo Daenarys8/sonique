@@ -290,7 +290,7 @@ const triggerGif = useCallback(
         setTimeout(() => {
           setCurrentPuzzleIndex(prev => prev + 1);
           resetPuzzleState();
-        }, 300);
+        }, 50);
       }
     }, [
       puzzles,

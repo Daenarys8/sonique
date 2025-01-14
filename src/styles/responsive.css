@@ -3,7 +3,6 @@
 
 /* Common container styles */
 .container,
-.category-grid-container,
 .puzzle-screen-container,
 .start-page-container,
 .login-form-container,
@@ -508,7 +507,6 @@
 
 /* Base container styles for all major components */
 .container,
-.category-grid-container,
 .puzzle-screen-container,
 .login-form-container,
 .loading-page-container,
@@ -530,30 +528,6 @@
   touch-action: manipulation;
 }
 
-/* Portrait Mode Layouts */
-@media screen and (orientation: portrait) {
-  .category-grid-container {
-    padding: var(--container-padding-sm);
-  }
-  
-  .puzzle-content {
-    max-width: 100%;
-    margin: 0 auto;
-  }
-}
-
-/* Landscape Mode Layouts */
-@media screen and (orientation: landscape) {
-  .category-grid-container {
-    padding: var(--container-padding-sm) calc(var(--container-padding-sm) * 2);
-  }
-  
-  .puzzle-content {
-    max-width: 80%;
-    margin: 0 auto;
-  }
-}
-
 /* Responsive Breakpoints */
 /* Mobile (up to 640px) */
 @media (max-width: var(--breakpoint-sm)) {
@@ -569,27 +543,18 @@
 /* Tablet (640px and up) */
 @media (min-width: var(--breakpoint-sm)) {
   .container,
-  .category-grid-container,
   .puzzle-screen-container {
     padding: var(--container-padding-md);
-  }
-  
-  .category-grid-container.landscape {
-    padding: var(--container-padding-md) calc(var(--container-padding-md) * 2);
   }
 }
 
 /* Desktop (768px and up) */
 @media (min-width: var(--breakpoint-md)) {
   .container,
-  .category-grid-container,
   .puzzle-screen-container {
     padding: var(--container-padding-lg);
   }
   
-  .category-grid-container.landscape {
-    padding: var(--container-padding-lg) calc(var(--container-padding-lg) * 2);
-  }
 }
 
 /* Large Screens (2000px and up) */

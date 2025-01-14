@@ -26,7 +26,7 @@ export function Leaderboard() {
   return (
     <div className="leaderboard-container relative overflow-hidden rounded-xl shadow-2xl w-full sm:w-[500px]">
       {/* Background with overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 backdrop-blur-sm" />
+      <div className="relative inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/30 backdrop-blur-sm w-full" />
 
       {/* Fixed Header */}
       <div className="relative z-10 p-6 pb-0">
