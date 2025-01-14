@@ -73,7 +73,7 @@ function GameContent() {
   ) : (
     <main 
       id="main-content" 
-      className="max-w-7xl mx-auto py-8 px-4 relative z-10" 
+      className="max-w-7xl mx-auto py-8 px-4" 
       role="main"
       style={{
         padding: 'clamp(1rem, 2vw, 2.5rem)', // Clamping padding for responsive design

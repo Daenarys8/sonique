@@ -1,21 +1,39 @@
 .category-grid-container {
-    position: relative;
-    padding: 2rem 0;
-    max-width: var(--content-max-width);
-    z-index: 10;
-    background-image: url('/assets/ruins.jpg'); /* Background image */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    min-height: 100vh;
-    border-radius: 1rem;
-  }
-  
-  .category-grid-container button {
-    position: relative;
-    z-index: 10;
-  }
-  
+  position: relative;
+  max-width: var(--content-max-width);
+  z-index: 10;
+  background-image: url('/assets/ruins.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  border-radius: 1rem;
+}
+
+.scrollable-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.scrollable-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+/* Ensure smooth scrolling */
+.scrollable-container {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+
   .futuristic-bg,
   .grid-overlay {
     z-index: 0;
@@ -24,41 +42,25 @@
   
   .worlds-container {
     background-image: url('/assets/header2.jpg');
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(2px);
     border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 0.75rem;
+    border-radius: 1rem;
     box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
     padding: 1rem 2rem;
     max-width: 23rem;
     margin-left: auto;
     margin-right: auto;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
   
-  .category-grid-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-  }
-  
-  .category-grid-container > div {
-    position: relative;
-    z-index: 2;
-  }
-  
-  .category-title {
-    font-size: clamp(1.25rem, 3vw, 1.75rem); /* Clamped font size */
+ .category-title {
+    font-size: clamp(0.7rem, 2vw, 1.2rem); /* Clamped font size */
     line-height: 1.2;
     margin-bottom: 0.5rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     text-align: center;
     color: white;
     text-shadow: 
@@ -94,6 +96,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    text-align: center;
     padding: 1.5rem;
     background: linear-gradient(
       to top,
@@ -156,9 +159,9 @@
   }
   
   .sound-toggle-button {
-    position: fixed;
+    position: relative;
     top: 1rem;
-    right: 1rem;
+    left: 24rem;
     z-index: 100;
     background: rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(255, 255, 255, 0.2);

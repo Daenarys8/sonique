@@ -4,13 +4,13 @@
     background-size: cover;
     background-position: center;
     width: 100%; /* Full width */
-    max-width: clamp(300px, 60vw, 600px); /* Dynamically clamps the width of the container */
+    max-width: clamp(300px, 80vw, 600px); /* Dynamically clamps the width of the container */
     margin: 0 auto;
     position: relative;
     display: flex;
     flex-direction: column;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: auto;
     padding: clamp(1rem, 4vw, 2rem); /* Clamping padding to scale with viewport */
   }
   
@@ -22,6 +22,8 @@
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(8px);
     z-index: -1;
+    width: 100%;
+    max-width: clamp(300px, 80vw, 600px);
   }
   
   /* Header */
@@ -152,7 +154,7 @@
   
   /* Font-Family for Gaming */
   .font-gaming {
-    font-family: 'Gaming', sans-serif;
+    font-family: 'orbitron', sans-serif;
   }
   
   @font-face {
